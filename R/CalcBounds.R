@@ -4,7 +4,7 @@
 
 ### The function returns the following:
 ########################################################################
-CalcBounds <- function(Res, bounds = T, sens = F, sens.param = NULL, probs = T, RMST = T)
+CalcBounds <- function(Res, bounds = T,  probs = T, RMST = T)
 {
   all.times <- Res$all.times
   S2A0.all.times <- Res$S2A0.all.times
@@ -15,8 +15,8 @@ CalcBounds <- function(Res, bounds = T, sens = F, sens.param = NULL, probs = T, 
   etasA1T2.le.t <- Res$etasA1T2.le.t
   S1A0.all.times <- Res$S1A0.all.times
   S1A1.all.times <- Res$S1A1.all.times
-  S1A0T1lT2.all.times <- res$S1A0T1lT2.all.times
-  S1A1T1lT2.all.times <- res$S1A1T1lT2.all.times
+  S1A0T1lT2.all.times <- Res$S1A0T1lT2.all.times
+  S1A1T1lT2.all.times <- Res$S1A1T1lT2.all.times
   F2A0T1lT2.all.times <- (1 - S2A0.all.times)*etasA0T2.le.t/etaA0
   F1A0T1lT2.all.times <- 1 - S1A0T1lT2.all.times
   F2A0T1gT2 <- (1 - etasA0T2.le.t)*(1 - S2A0.all.times)/(1 - etaA0)
