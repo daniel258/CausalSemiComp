@@ -41,17 +41,11 @@ AD.1 <- sim.df$AD.1
 Death.0 <- sim.df$Death.0
 Death.1 <- sim.df$Death.1
 
-true.eta0 <- mean(AD.0 < Death.0)
-true.eta1 <- mean(AD.1 < Death.1)
+true.eta0 <- mean(AD.0 <= Death.0)
+true.eta1 <- mean(AD.1 <= Death.1)
 true.prop.ad <- mean(AD.0 <= Death.0 & AD.1 <= Death.1)
 true.prop.nd <- mean(AD.0 > Death.0 &  AD.1 > Death.1)
 true.prop.dh <- 1 - true.prop.ad - true.prop.nd
-
-# true.eta0 <- mean(AD.0 <= Death.0 & Death.0 <= 100)
-# true.eta1 <- mean(AD.1 <= Death.1 & Death.1 <= 100)
-# true.prop.ad <- mean(AD.0 <= Death.0 & AD.1 <= Death.1 & Death.0 <= 100 & Death.1 <= 100)
-# true.prop.nd <- mean(AD.0 > pmin(Death.0, 100) & pmin(AD.1 > Death.1, 100))
-# true.prop.dh <- 1 - true.prop.ad - true.prop.nd
 
 ############################################################################################################
 e0 <- ecdf(Death.0)
@@ -59,8 +53,6 @@ e1 <- ecdf(Death.1)
 true.S2A0 <- 1 - e0(all.times)
 true.S2A1 <- 1 - e1(all.times)
 ##### \eta_{A=a, T_2 \le t}
-# true.etas.T2leT.0 <- sapply(all.times, function(t) {mean(AD.0[Death.0 <= t] <= Death.0[Death.0 <= t])})*mean(Death.0 <= 100)
-# true.etas.T2leT.1 <- sapply(all.times, function(t) {mean(AD.1[Death.1 <= t] <= Death.1[Death.1 <= t])})*mean(Death.1 <= 100)
 true.etas.T2leT.0 <- sapply(all.times, function(t) {mean(AD.0[Death.0 <= t] <= Death.0[Death.0 <= t])})
 true.etas.T2leT.1 <- sapply(all.times, function(t) {mean(AD.1[Death.1 <= t] <= Death.1[Death.1 <= t])})
 
@@ -79,6 +71,15 @@ true.S2A1T1leT2 <- sapply(all.times, function(t) {mean(Death.1[AD.1 < Death.1] >
 #####  S_{2|A=a, T_1 > T_2}
 true.S2A0T1gT2 <- sapply(all.times, function(t) {mean(Death.0[AD.0 > Death.0] > t)})
 true.S2A1T1gT2 <- sapply(all.times, function(t) {mean(Death.1[AD.1 > Death.1] > t)})
+########################################################
+F2.a0.ad <- sapply(all.times, function(t) {mean(Death.0[AD.0 < Death.0 & AD.1 < Death.1] <= t)})
+F2.a1.ad <- sapply(all.times, function(t) {mean(Death.1[AD.0 < Death.0 & AD.1 < Death.1] <= t)})
+F2.a0.nd <- sapply(all.times, function(t) {mean(Death.0[AD.0 > Death.0 & AD.1 > Death.1] <= t)})
+F2.a1.nd <- sapply(all.times, function(t) {mean(Death.1[AD.0 > Death.0 & AD.1 > Death.1] <= t)})
+F1.a0.ad <- sapply(all.times, function(t) {mean(AD.0.inf[AD.0 < Death.0 & AD.1 < Death.1] <= t)})
+F1.a1.ad <- sapply(all.times, function(t) {mean(AD.1.inf[AD.0 < Death.0 & AD.1 < Death.1] <= t)})
+
+########################################################
 list.ret <- list(true.eta0 = true.eta0, true.eta1 = true.eta1,
                  true.prop.ad = true.prop.ad, true.prop.nd = true.prop.nd, true.prop.dh = true.prop.dh,
                  true.S2A0 = true.S2A0, true.S2A1 = true.S2A1,
@@ -86,5 +87,8 @@ list.ret <- list(true.eta0 = true.eta0, true.eta1 = true.eta1,
                  true.etas.T2leT.0 = true.etas.T2leT.0, true.etas.T2leT.1 = true.etas.T2leT.1,
                  true.S1A0T1leT2 = true.S1A0T1leT2, true.S1A1T1leT2 = true.S1A1T1leT2,
                  true.S2A0T1leT2 = true.S2A0T1leT2, true.S2A1T1leT2 = true.S2A1T1leT2,
-                 true.S2A0T1gT2 = true.S2A0T1gT2, true.S2A1T1gT2 = true.S2A1T1gT2)
+                 true.S2A0T1gT2 = true.S2A0T1gT2, true.S2A1T1gT2 = true.S2A1T1gT2,
+                 F2.a0.ad = F2.a0.ad, F2.a1.ad = F2.a1.ad, F2.a0.nd = F2.a0.nd, F2.a1.nd = F2.a1.nd,
+                 F1.a0.ad = F1.a0.ad, F1.a1.ad = F1.a1.ad)
+return(list.ret)
 }
