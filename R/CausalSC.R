@@ -22,11 +22,11 @@ CausalSC <- function(L = 0, T1, T2, delta1, delta2, A, all.times)
   # Estimate S_{2|A=a}(t)
   if(length(L)==1)
   {
-    S2A0 <- survfit(Surv(T2, delta2) ~ 1, subset = A==0)
-    S2A1 <- survfit(Surv(T2, delta2) ~ 1, subset = A==1)
+    S2A0 <- survival::survfit(survival::Surv(T2, delta2) ~ 1, subset = A==0)
+    S2A1 <- survival::survfit(survival::Surv(T2, delta2) ~ 1, subset = A==1)
   } else {
-    S2A0 <- survfit(Surv(L, T2, delta2) ~ 1, subset = A==0)
-    S2A1 <- survfit(Surv(L, T2, delta2) ~ 1, subset = A==1)
+    S2A0 <- survival::survfit(survival::Surv(L, T2, delta2) ~ 1, subset = A==0)
+    S2A1 <- survival::survfit(survival::Surv(L, T2, delta2) ~ 1, subset = A==1)
   }
   S2A0.surv <- S2A0$surv
   S2A1.surv <- S2A1$surv
@@ -45,15 +45,13 @@ CausalSC <- function(L = 0, T1, T2, delta1, delta2, A, all.times)
   T2A1dead <- T2[A==1 & delta2==1]
   if(length(L)==1)
   {
-    fit.eta.A0 <- prodlim::prodlim(Surv(T1A0dead, delta1A0dead) ~ T2A0dead)
-    fit.eta.A1 <- prodlim::prodlim(Surv(T1A1dead, delta1A1dead) ~ T2A1dead)
-    # fit.eta.A0 <- prodlimDN(Surv(T1A0dead, delta1A0dead) ~ T2A0dead)
-    # fit.eta.A1 <- prodlimDN(Surv(T1A1dead, delta1A1dead) ~ T2A1dead)
+    fit.eta.A0 <- prodlim::prodlim(survival::Surv(T1A0dead, delta1A0dead) ~ T2A0dead)
+    fit.eta.A1 <- prodlim::prodlim(survival::Surv(T1A1dead, delta1A1dead) ~ T2A1dead)
   } else {
     LA0dead <- L[A==0 & delta2==1]
     LA1dead <- L[A==1 & delta2==1]
-    fit.eta.A0 <- prodlim::prodlim(Surv(LA0dead, T1A0dead, delta1A0dead) ~ T2A0dead)
-    fit.eta.A1 <- prodlim::prodlim(Surv(LA1dead, T1A1dead, delta1A1dead) ~ T2A1dead)
+    fit.eta.A0 <- prodlim::prodlim(survival::Surv(LA0dead, T1A0dead, delta1A0dead) ~ T2A0dead)
+    fit.eta.A1 <- prodlim::prodlim(survival::Surv(LA1dead, T1A1dead, delta1A1dead) ~ T2A1dead)
   }
   # Calculate S_{1|A=0, T_2=t_t} only for t for which dS2A0 > 0 (and the same for A=1 with dS2A1 > 0)
   newdata.A0 <- data.frame(T2A0dead = S2A0$time)
