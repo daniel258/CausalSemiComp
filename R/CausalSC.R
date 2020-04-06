@@ -10,23 +10,23 @@
 #  all.times
 ########################################################################
 
-CausalSC <- function(L = 0, T1, T2, delta1, delta2, A, all.times)
+CausalSC <- function(Ltime = 0, T1, T2, delta1, delta2, A, all.times)
 {
   #if (!bounds & !sens) stop("Must specfiy either bounds=T or sens=T (or both)")
   #if (sens==T & is.null(thetas)) stop("Must specfiy thetas when sens==T")
   n.sample <- length(T1)
   n.times <- length(all.times)
-  if  (!(length(L) %in% c(1, n.sample))) {
-    stop("L should be either scalar or at same length as T1")
+  if  (!(length(Ltime) %in% c(1, n.sample))) {
+    stop("Ltime should be either scalar or at same length as T1")
   }
   # Estimate S_{2|A=a}(t)
-  if(length(L)==1)
+  if(length(Ltime)==1)
   {
     S2A0 <- survival::survfit(survival::Surv(T2, delta2) ~ 1, subset = A==0)
     S2A1 <- survival::survfit(survival::Surv(T2, delta2) ~ 1, subset = A==1)
   } else {
-    S2A0 <- survival::survfit(survival::Surv(L, T2, delta2) ~ 1, subset = A==0)
-    S2A1 <- survival::survfit(survival::Surv(L, T2, delta2) ~ 1, subset = A==1)
+    S2A0 <- survival::survfit(survival::Surv(Ltime, T2, delta2) ~ 1, subset = A==0)
+    S2A1 <- survival::survfit(survival::Surv(Ltime, T2, delta2) ~ 1, subset = A==1)
   }
   S2A0.surv <- S2A0$surv
   S2A1.surv <- S2A1$surv
@@ -43,13 +43,13 @@ CausalSC <- function(L = 0, T1, T2, delta1, delta2, A, all.times)
   delta1A1dead <- delta1[A==1 & delta2==1]
   T2A0dead <- T2[A==0 & delta2==1]
   T2A1dead <- T2[A==1 & delta2==1]
-  if(length(L)==1)
+  if(length(Ltime)==1)
   {
     fit.eta.A0 <- prodlim::prodlim(survival::Surv(T1A0dead, delta1A0dead) ~ T2A0dead)
     fit.eta.A1 <- prodlim::prodlim(survival::Surv(T1A1dead, delta1A1dead) ~ T2A1dead)
   } else {
-    LA0dead <- L[A==0 & delta2==1]
-    LA1dead <- L[A==1 & delta2==1]
+    LA0dead <- Ltime[A==0 & delta2==1]
+    LA1dead <- Ltime[A==1 & delta2==1]
     fit.eta.A0 <- prodlim::prodlim(survival::Surv(LA0dead, T1A0dead, delta1A0dead) ~ T2A0dead)
     fit.eta.A1 <- prodlim::prodlim(survival::Surv(LA1dead, T1A1dead, delta1A1dead) ~ T2A1dead)
   }
