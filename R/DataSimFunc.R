@@ -33,6 +33,7 @@ SimDataWeibFrail <- function(n.sample, params, no.protected = T, cens.exp.rate =
     {
       gamma.vec0 <- rgamma(n.sample.temp, shape = gamma.shape[1], scale = gamma.scale[1])
       gamma.vec1 <- rgamma(n.sample.temp, shape = gamma.shape[2], scale = gamma.scale[2])
+      gamma.out <- cbind(gamma.vec0, gamma.vec1)
       scale.a0.01 <- exp( -log(gamma.vec0) - (X %*% beta.a0.01)) * base.weib.scale.a0.01
       scale.a1.01 <- exp( -log(gamma.vec1) - (X %*% beta.a1.01)) * base.weib.scale.a1.01
       scale.a0.02 <- exp( -log(gamma.vec0) - (X %*% beta.a0.02)) * base.weib.scale.a0.02
@@ -41,6 +42,7 @@ SimDataWeibFrail <- function(n.sample, params, no.protected = T, cens.exp.rate =
       scale.a1.12 <- exp( -log(gamma.vec1) - (X %*% beta.a1.12)) * base.weib.scale.a1.12
     } else {
     gamma.vec <- rgamma(n.sample.temp, shape = gamma.shape, scale = gamma.scale)
+    gamma.out <- gamma.vec
     scale.a0.01 <- exp( -log(gamma.vec) - (X %*% beta.a0.01)) * base.weib.scale.a0.01
     scale.a1.01 <- exp( -log(gamma.vec) - (X %*% beta.a1.01)) * base.weib.scale.a1.01
     scale.a0.02 <- exp( -log(gamma.vec) - (X %*% beta.a0.02)) * base.weib.scale.a0.02
@@ -101,5 +103,6 @@ SimDataWeibFrail <- function(n.sample, params, no.protected = T, cens.exp.rate =
   delta2[A==0] <-  T2[A==0]==T2.0[A==0]
   delta2[A==1] <-  T2[A==1]==T2.1[A==1]
   list.to.return <- list(T1.0 = T1.0, T1.1 = T1.1, T2.0 = T2.0, T2.1 = T2.1, X = X,
-                         T1 = T1, T2 = T2, A = A, C = C, delta1 = delta1, delta2 = delta2)
+                         T1 = T1, T2 = T2, A = A, C = C, delta1 = delta1, delta2 = delta2,
+                         gamma.out = gamma.out)
 }
