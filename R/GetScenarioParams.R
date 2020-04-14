@@ -132,6 +132,28 @@ GetScenarioParams <- function(scenario.num)
     beta.a1.12 <- log(c(0.5, 1))
     theta <- 6
   }
+  if (scenario.num==7)
+  {
+    base.weib.scale.a0.01 <- 10
+    base.weib.scale.a1.01 <- 7.5
+    base.weib.scale.a0.02 <- 20
+    base.weib.scale.a1.02 <- 17.5
+    base.weib.scale.a0.12 <- 30
+    base.weib.scale.a1.12 <- 17.5
+    base.weib.shape.a0.01 <- 1
+    base.weib.shape.a1.01 <- 1
+    base.weib.shape.a0.02 <- 1
+    base.weib.shape.a1.02 <- 1
+    base.weib.shape.a0.12 <- 1
+    base.weib.shape.a1.12 <- 1
+    beta.a0.01 <- log(c(0.3, 1))
+    beta.a0.02 <- log(c(1, 1))
+    beta.a0.12 <- log(c(1, 1))
+    beta.a1.01 <- log(c(0.8, 1))
+    beta.a1.02 <- log(c(0.8, 1))
+    beta.a1.12 <- log(c(0.5, 1))
+    theta <- 2
+  }
   params <- mget(ls(environment()))
   return(params)
 }
