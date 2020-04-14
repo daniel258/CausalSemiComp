@@ -7,7 +7,8 @@
 # with the option to have no disease-protected
 # my trick is to simulate more than needed, throw out "dp" and then keep
 # only desired sample size
-SimDataWeibFrail <- function(n.sample, params, no.protected = T, no.large = T, cens.exp.rate = 0.1)
+SimDataWeibFrail <- function(n.sample, params, no.protected = T, no.large = T, cens.exp.rate = 0.1,
+                             cens.admin = 500)
 {
   list2env(params, envir = environment())
   # if theta is a scalar same, assume frailty variate is the same. If same dist but indep
@@ -116,10 +117,10 @@ SimDataWeibFrail <- function(n.sample, params, no.protected = T, no.large = T, c
   # Simulate A and obtain observed data
   A <- rbinom(n = n.sample, size = 1, prob = 0.5)
   T1 <- T2 <- delta1 <- delta2 <- vector(length = n.sample)
-  T1[A==0] <- pmin(T1.0[A==0], T2.0[A==0], C[A==0])
-  T1[A==1] <- pmin(T1.1[A==1], T2.1[A==1], C[A==1])
-  T2[A==0] <- pmin(T2.0[A==0], C[A==0])
-  T2[A==1] <- pmin(T2.1[A==1], C[A==1])
+  T1[A==0] <- pmin(T1.0[A==0], T2.0[A==0], C[A==0], cens.admin)
+  T1[A==1] <- pmin(T1.1[A==1], T2.1[A==1], C[A==1], cens.admin)
+  T2[A==0] <- pmin(T2.0[A==0], C[A==0], cens.admin)
+  T2[A==1] <- pmin(T2.1[A==1], C[A==1], cens.admin)
   delta1[A==0] <-  T1[A==0]==T1.0[A==0]
   delta1[A==1] <-  T1[A==1]==T1.1[A==1]
   delta2[A==0] <-  T2[A==0]==T2.0[A==0]
