@@ -8,7 +8,7 @@
 # my trick is to simulate more than needed, throw out "dp" and then keep
 # only desired sample size
 SimDataWeibFrail <- function(n.sample, params, no.protected = T, no.large = T, cens.exp.rate = 0.1,
-                             cens.admin = 500)
+                             cens.admin = 200)
 {
   list2env(params, envir = environment())
   # if theta is a scalar same, assume frailty variate is the same. If same dist but indep
@@ -106,10 +106,10 @@ SimDataWeibFrail <- function(n.sample, params, no.protected = T, no.large = T, c
     n.sample.real <- length(T1.0)
     if(n.sample.real >= n.sample) {cond.sample <- T}
   }
-  T1.0 <- T1.0[1:n.sample]
-  T1.1 <- T1.1[1:n.sample]
-  T2.0 <- T2.0[1:n.sample]
-  T2.1 <- T2.1[1:n.sample]
+  # T1.0 <- pmin(T1.0[1:n.sample], 500)
+  # T1.1 <- pmin(T1.1[1:n.sample], 500)
+  # T2.0 <- pmin(T2.0[1:n.sample], 500)
+  # T2.1 <- pmin(T2.1[1:n.sample], 500)
   X <- X[1:n.sample, ]
   gamma.out <- gamma.out[1:n.sample]
   C <- round(rexp(n.sample, rate = cens.exp.rate), 1)
