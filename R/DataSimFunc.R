@@ -106,10 +106,10 @@ SimDataWeibFrail <- function(n.sample, params, no.protected = T, no.large = T, c
     n.sample.real <- length(T1.0)
     if(n.sample.real >= n.sample) {cond.sample <- T}
   }
-  # T1.0 <- pmin(T1.0[1:n.sample], 500)
-  # T1.1 <- pmin(T1.1[1:n.sample], 500)
-  # T2.0 <- pmin(T2.0[1:n.sample], 500)
-  # T2.1 <- pmin(T2.1[1:n.sample], 500)
+  T1.0 <- T1.0[1:n.sample]
+  T1.1 <- T1.1[1:n.sample]
+  T2.0 <- T2.0[1:n.sample]
+  T2.1 <- T2.1[1:n.sample]
   X <- X[1:n.sample, ]
   gamma.out <- gamma.out[1:n.sample]
   C <- round(rexp(n.sample, rate = cens.exp.rate), 1)
@@ -125,6 +125,7 @@ SimDataWeibFrail <- function(n.sample, params, no.protected = T, no.large = T, c
   delta1[A==1] <-  T1[A==1]==T1.1[A==1]
   delta2[A==0] <-  T2[A==0]==T2.0[A==0]
   delta2[A==1] <-  T2[A==1]==T2.1[A==1]
+  T2[delta1==1 & T1==cens.admin] <- cens.admin + 0.05 #avoiding erros in the third move
   list.to.return <- list(T1.0 = T1.0, T1.1 = T1.1, T2.0 = T2.0, T2.1 = T2.1, X = X,
                          T1 = T1, T2 = T2, A = A, C = C, delta1 = delta1, delta2 = delta2,
                          gamma.out = gamma.out)
