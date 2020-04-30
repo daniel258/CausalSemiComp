@@ -56,8 +56,9 @@ EMcausalSC <- function(data, Xnames, max.iter = 10000)
   est.beta.a1.02 <- coef(fit.a1.02)
   est.beta.a0.12  <- coef(fit.a0.12)
   est.beta.a1.12  <- coef(fit.a1.12)
-  old.betas <- new.betas <- c(est.beta.a0.01, est.beta.a1.01, est.beta.a0.02,
-                              est.beta.a1.02, est.beta.a0.12, est.beta.a1.12)
+  old.betas <- new.betas <- naive.betas <-  c(est.beta.a0.01, est.beta.a1.01,
+                                              est.beta.a0.02, est.beta.a1.02,
+                                              est.beta.a0.12, est.beta.a1.12)
   old.thetas <- new.thetas <- c(1,1)
   s.fit.a0.1 <- survfit(fit.a0.01, censor = FALSE)
   s.fit.a0.2 <- survfit(fit.a0.02, censor = FALSE)
@@ -143,12 +144,12 @@ EMcausalSC <- function(data, Xnames, max.iter = 10000)
     ################################################################################################
     ##### Create step functions from all baseline hazard estimators ########
     ################################################################################################
-    s.fit.a0.1 <- survfit(fit.a0.01, newdata = data.calc.H, censor = FALSE)
-    s.fit.a0.2 <- survfit(fit.a0.02, newdata = data.calc.H, censor = FALSE)
-    s.fit.a0.12 <- survfit(fit.a0.12, newdata = data.calc.H, censor = FALSE)
-    s.fit.a1.1 <- survfit(fit.a1.01, newdata = data.calc.H, censor = FALSE)
-    s.fit.a1.2 <- survfit(fit.a1.02, newdata = data.calc.H, censor = FALSE)
-    s.fit.a1.12 <- survfit(fit.a1.12, newdata = data.calc.H, censor = FALSE)
+    s.fit.a0.1 <- survfit(fit.a0.01, censor = FALSE)
+    s.fit.a0.2 <- survfit(fit.a0.02, censor = FALSE)
+    s.fit.a0.12 <- survfit(fit.a0.12, censor = FALSE)
+    s.fit.a1.1 <- survfit(fit.a1.01, censor = FALSE)
+    s.fit.a1.2 <- survfit(fit.a1.02, censor = FALSE)
+    s.fit.a1.12 <- survfit(fit.a1.12, censor = FALSE)
     step.A0T1 <- stepfun(x = s.fit.a0.1$time, y = c(0, -log(s.fit.a0.1$surv)))
     step.A0T2 <- stepfun(x = s.fit.a0.2$time, y = c(0, -log(s.fit.a0.2$surv)))
     step.A0T12 <- stepfun(x = s.fit.a0.12$time, y = c(0, -log(s.fit.a0.12$surv)))
@@ -211,7 +212,7 @@ EMcausalSC <- function(data, Xnames, max.iter = 10000)
   }
   fit.list <- list(fit.a0.01 = fit.a0.01, fit.a0.02 = fit.a0.02, fit.a0.12 = fit.a0.12,
                    fit.a1.01 = fit.a1.01, fit.a1.02 = fit.a1.02, fit.a1.12 = fit.a1.12)
-  list.out <- list(betas = new.betas, thetas = new.thetas,
+  list.out <- list(betas = new.betas, thetas = new.thetas, naive.betas = naive.betas,
                    fit.list = fit.list, iter = iter)
   return(list.out)
 }
