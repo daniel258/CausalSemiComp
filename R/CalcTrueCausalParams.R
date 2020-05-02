@@ -4,12 +4,14 @@
 # A function to calculate true parameter values
 #Data-generating functions for simulations
 ###########################################################################
-CalcTrueCausalParams <- function(n.sample, params, all.times, no.protected, adjusted = F)
+CalcTrueCausalParams <- function(n.sample, params, all.times,
+                                 no.large, no.protected, adjusted = F)
 {
 
 if(n.sample < 10001) {warning(paste0("Hard to believe that n.sample = ", n.sample, "is sufficient to
                                      approximate infinite population"))}
-sim.df <- SimDataWeibFrail(n.sample = n.sample, params, no.protected = no.protected, cens.exp.rate = 0.000001)
+sim.df <- SimDataWeibFrail(n.sample = n.sample, params, no.large = no.large,
+                           no.protected = no.protected, cens.exp.rate = 0.000001)
 T1.0 <- sim.df$T1.0
 T1.1 <- sim.df$T1.1
 T2.0 <- sim.df$T2.0
