@@ -212,7 +212,10 @@ EMcausalSC <- function(data, Xnames, max.iter = 10000)
   }
   fit.list <- list(fit.a0.01 = fit.a0.01, fit.a0.02 = fit.a0.02, fit.a0.12 = fit.a0.12,
                    fit.a1.01 = fit.a1.01, fit.a1.02 = fit.a1.02, fit.a1.12 = fit.a1.12)
+  H.step.funcs <- list(step.A0T1 = step.A0T1, step.A0T2 = step.A0T2,
+                       step.A0T12 = step.A0T12,  step.A1T1 = step.A1T1,
+                       step.A1T2 = step.A1T2, step.A1T12 = step.A1T12)
   list.out <- list(betas = new.betas, thetas = new.thetas, naive.betas = naive.betas,
-                   fit.list = fit.list, iter = iter)
+                   fit.list = fit.list, H.step.funcs = H.step.funcs, iter = iter)
   return(list.out)
 }
