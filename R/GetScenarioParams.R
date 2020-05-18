@@ -48,6 +48,7 @@ GetScenarioParams <- function(scenario.num)
     beta.a1.02 <- log(c(1, 1))
     beta.a1.12 <- log(c(1, 1))
     theta <- 2
+    rho <- 0.8
   }
   if (scenario.num==3)
   {
