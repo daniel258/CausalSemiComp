@@ -93,22 +93,26 @@ CalcRMST <- function(rho, tau, n.sample.sim, data, Xnames, res)
   T2.1.sim[i] <- sample(A1T2.times, 1, replace = T, prob = pr.A1T2)
   if (T1.0.sim[i] <= T2.0.sim[i])
   {
+    if (T1.0.sim[i]==tau) {T2.0.sim[i] <- tau} else {
     step.S.a0.12i <- function(t) {exp(-(step.A0T12(t) - step.A0T12(T1.0.sim[i])) * exp.b012.sim[i] * gamma0[i])}
     A0T12.times.i <- A0T12.times[A0T12.times > T1.0.sim[i]]
     pr.A0T12 <- -diff(c(1, step.S.a0.12i(A0T12.times.i)))
+    if(length(pr.A0T12)==1) {T2.0.sim[i] <- tau} else {
     pr.A0T12[length(pr.A0T12)] <- pr.A0T12[length(pr.A0T12)] + 1 - sum(-diff(c(1, step.S.a0.12i(A0T12.times.i))))
     T2.0.sim[i] <- sample(A0T12.times.i, 1, replace = T, prob = pr.A0T12)
-  } else {
+  }}} else {
     T1.0.sim[i] <- Inf
   }
   if (T1.1.sim[i] <= T2.1.sim[i])
   {
+    if (T1.1.sim[i]==tau) {T2.1.sim[i] <- tau} else {
     step.S.a1.12i <- function(t) {exp(-(step.A1T12(t) - step.A1T12(T1.1.sim[i])) * exp.b112.sim[i] * gamma1[i])}
     A1T12.times.i <- A1T12.times[A1T12.times > T1.1.sim[i]]
     pr.A1T12 <- -diff(c(1, step.S.a1.12i(A1T12.times.i)))
+    if(length(pr.A1T12)==1) {T2.1.sim[i] <- tau} else {
     pr.A1T12[length(pr.A1T12)] <- pr.A1T12[length(pr.A1T12)] + 1 - sum(-diff(c(1, step.S.a1.12i(A1T12.times.i))))
     T2.1.sim[i] <- sample(A1T12.times.i, 1, replace = T, prob = pr.A1T12)
-  } else {
+  }}} else {
     T1.1.sim[i] <- Inf
   }
   }
@@ -123,6 +127,6 @@ CalcRMST <- function(rho, tau, n.sample.sim, data, Xnames, res)
   med.ATE.T2.nd <- median(T2.1.sim[nd]) - median(T2.0.sim[nd])
   med.ATE.T1.ad <- median(T1.1.sim[ad]) - median(T1.0.sim[ad])
   list.ret <- list(ATE.T2.ad = ATE.T2.ad, ATE.T2.nd = ATE.T2.nd, ATE.T1.ad = ATE.T1.ad,
-                   med.ATE.T2.ad = ATE.T2.ad, med.ATE.T2.nd = ATE.T2.nd, med.ATE.T1.ad = med.ATE.T1.ad)
+                   med.ATE.T2.ad = ATE.T2.ad, med.ATE.T2.nd = med.ATE.T2.nd, med.ATE.T1.ad = med.ATE.T1.ad)
   return(list.ret)
 }
