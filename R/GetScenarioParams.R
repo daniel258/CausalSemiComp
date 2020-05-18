@@ -6,7 +6,7 @@ GetScenarioParams <- function(scenario.num)
 {
   if (scenario.num==1)
   {
-    base.weib.scale.a0.01 <- 12.5
+    base.weib.scale.a0.01 <- 9
     base.weib.scale.a1.01 <- 7.5
     base.weib.scale.a0.02 <- 20
     base.weib.scale.a1.02 <- 15
@@ -25,7 +25,7 @@ GetScenarioParams <- function(scenario.num)
     beta.a1.02 <- log(c(1, 1))
     beta.a1.12 <- log(c(1, 1))
     theta <- 6
-    rho <- 0.7
+    rho <- 0.8
   }
   if (scenario.num==2)
   {
