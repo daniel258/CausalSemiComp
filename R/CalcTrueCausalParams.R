@@ -5,7 +5,7 @@
 #Data-generating functions for simulations
 ###########################################################################
 CalcTrueCausalParams <- function(n.sample, params, all.times,
-                                 no.large, no.protected, adjusted = F)
+                                 no.large, no.protected, adjusted = F, tau = NULL)
 {
 
 if(n.sample < 10001) {warning(paste0("Hard to believe that n.sample = ", n.sample, "is sufficient to
@@ -165,7 +165,9 @@ list.ret <- list(true.eta0 = true.eta0, true.eta1 = true.eta1,
                  true.S2A0T1gT2 = true.S2A0T1gT2, true.S2A1T1gT2 = true.S2A1T1gT2,
                  F2.a0.ad = F2.a0.ad, F2.a1.ad = F2.a1.ad, F2.a0.nd = F2.a0.nd, F2.a1.nd = F2.a1.nd,
                  F1.a0.ad = F1.a0.ad, F1.a1.ad = F1.a1.ad, F1.a1.h = F1.a1.h,
-                 Zprob.ad = Zprob.ad, Zprob.nd = Zprob.nd)
+                 Zprob.ad = Zprob.ad, Zprob.nd = Zprob.nd,
+                 ATE.T2.ad = NULL, ATE.T2.nd = NULL, ATE.T1.ad = NULL,
+                 med.ATE.T2.ad = NULL, med.ATE.T2.nd = NULL, med.ATE.T1.ad = NULL)
 } else {
   list.ret <- list(true.eta0 = true.eta0, true.eta1 = true.eta1,
                    true.prop.ad = true.prop.ad, true.prop.nd = true.prop.nd, true.prop.dh = true.prop.dh,
@@ -176,7 +178,32 @@ list.ret <- list(true.eta0 = true.eta0, true.eta1 = true.eta1,
                    true.S2A0T1leT2 = true.S2A0T1leT2, true.S2A1T1leT2 = true.S2A1T1leT2,
                    true.S2A0T1gT2 = true.S2A0T1gT2, true.S2A1T1gT2 = true.S2A1T1gT2,
                    F2.a0.ad = F2.a0.ad, F2.a1.ad = F2.a1.ad, F2.a0.nd = F2.a0.nd, F2.a1.nd = F2.a1.nd,
-                   F1.a0.ad = F1.a0.ad, F1.a1.ad = F1.a1.ad, F1.a1.h = F1.a1.h)
+                   F1.a0.ad = F1.a0.ad, F1.a1.ad = F1.a1.ad, F1.a1.h = F1.a1.h,
+                   ATE.T2.ad = NULL, ATE.T2.nd = NULL, ATE.T1.ad = NULL,
+                   med.ATE.T2.ad = NULL, med.ATE.T2.nd = NULL, med.ATE.T1.ad = NULL)
+}
+# add RMST if tau is non null
+if (!is.null(tau))
+{
+  ad <- (T1.0 <= tau) & (T1.1 <= tau)
+  nd <- (T1.0 > tau) & (T1.1 > tau)
+  T1.0.tau <- pmin(T1.0, tau)
+  T1.1.tau <- pmin(T1.1, tau)
+  T2.0.tau <- pmin(T2.0, tau)
+  T2.1.tau <- pmin(T2.1, tau)
+  ########################################################
+  ATE.T2.ad <- mean(T2.1.tau[ad] - T2.0.tau[ad])
+  ATE.T2.nd <- mean(T2.1.tau[nd] - T2.0.tau[nd])
+  ATE.T1.ad <- mean(T1.1.tau[ad] - T1.0.tau[ad])
+  med.ATE.T2.ad <- median(T2.1.tau[ad]) - median(T2.0.tau[ad])
+  med.ATE.T2.nd <- median(T2.1.tau[nd]) - median(T2.0.tau[nd])
+  med.ATE.T1.ad <- median(T1.1.tau[ad]) - median(T1.0.tau[ad])
+  list.ret$ATE.T2.ad <- ATE.T2.ad
+  list.ret$ATE.T2.nd <- ATE.T2.nd
+  list.ret$ATE.T1.ad <- ATE.T1.ad
+  list.ret$med.ATE.T2.ad <- med.ATE.T2.ad
+  list.ret$med.ATE.T2.nd <- med.ATE.T2.nd
+  list.ret$med.ATE.T1.ad <- med.ATE.T1.ad
 }
 ########################################################
 return(list.ret)
