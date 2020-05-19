@@ -74,13 +74,16 @@ CalcRMST <- function(rho, tau, n.sample.sim, data, Xnames, res)
   # For now, only sample from event times
   for(i in 1:n.sample.sim)
   {
-    step.S.a0.01i <- function(t) {exp(-step.A0T1(t) * exp.b001.gamma0.sim[i])}
-    step.S.a0.02i <- function(t) {exp(-step.A0T2(t) * exp.b002.gamma0.sim[i])}
-    step.S.a0.12i <- function(t) {exp(-step.A0T12(t) * exp.b012.gamma0.sim[i])}
+    step.S.a0.01i <- function(t, ebg001) {exp(-step.A0T1(t) * exp.b001.gamma0.sim[i])}
+    step.S.a0.02i <- function(t, ebg002) {exp(-step.A0T2(t) * exp.b002.gamma0.sim[i])}
+    #step.S.a0.12i <- function(t, ebg012) {exp(-step.A0T12(t) * exp.b012.gamma0.sim[i])}
+    # step.S.a0.01i <- function(t) {exp(-step.A0T1(t) * exp.b001.gamma0.sim[i])}
+    # step.S.a0.02i <- function(t) {exp(-step.A0T2(t) * exp.b002.gamma0.sim[i])}
+    # step.S.a0.12i <- function(t) {exp(-step.A0T12(t) * exp.b012.gamma0.sim[i])}
     #H.a0.12.T1 <- step.A0T12(data.predictA0T12$T1) * exp.b012.sim[i]
     step.S.a1.01i <- function(t) {exp(-step.A1T1(t) * exp.b101.gamma1.sim[i])}
     step.S.a1.02i <- function(t) {exp(-step.A1T2(t) * exp.b102.gamma1.sim[i])}
-    step.S.a1.12i <- function(t) {exp(-step.A1T12(t) * exp.b112.gamma1.sim[i])}
+  #  step.S.a1.12i <- function(t) {exp(-step.A1T12(t) * exp.b112.gamma1.sim[i])}
   # step.S.a0.01i <- function(t) {exp(-step.A0T1(t) * exp.b001.sim[i] * gamma0[i])}
   # step.S.a0.02i <- function(t) {exp(-step.A0T2(t) * exp.b002.sim[i] * gamma0[i])}
   # step.S.a0.12i <- function(t) {exp(-step.A0T12(t) * exp.b012.sim[i] * gamma0[i])}
