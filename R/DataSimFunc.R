@@ -32,17 +32,20 @@ SimDataWeibFrail <- function(n.sample, params, no.protected = T, no.large = T, c
     U1.1 <- runif(n.sample.temp)
     U2.0 <- runif(n.sample.temp)
     U2.1 <- runif(n.sample.temp)
-    T1.0 <- round((-log(U1.0)/(gamma0 * exp(X %*% beta.a0.01) *
-                              base.weib.scale.a0.01^(-base.weib.shape.a0.01)))^
+    expb001.gamma <- gamma0 * exp(X %*% beta.a0.01)
+    expb002.gamma <- gamma0 * exp(X %*% beta.a0.02)
+    expb012.gamma <- gamma0 * exp(X %*% beta.a0.12)
+    expb101.gamma <- gamma1 * exp(X %*% beta.a1.01)
+    expb102.gamma <- gamma1 * exp(X %*% beta.a1.02)
+    expb112.gamma <- gamma1 * exp(X %*% beta.a1.12)
+
+    T1.0 <- round((-log(U1.0)/(expb001.gamma * base.weib.scale.a0.01^(-base.weib.shape.a0.01)))^
                               (1/base.weib.shape.a0.01), 1)
-    T1.1 <- round((-log(U1.1)/(gamma1 * exp(X %*% beta.a1.01) *
-                                  base.weib.scale.a1.01^(-base.weib.shape.a1.01)))^
+    T1.1 <- round((-log(U1.1)/(expb101.gamma * base.weib.scale.a1.01^(-base.weib.shape.a1.01)))^
                       (1/base.weib.shape.a1.01), 1)
-    T2.0 <- round((-log(U2.0)/(gamma0 * exp(X %*% beta.a0.02) *
-                                  base.weib.scale.a0.02^(-base.weib.shape.a0.02)))^
+    T2.0 <- round((-log(U2.0)/(expb002.gamma * base.weib.scale.a0.02^(-base.weib.shape.a0.02)))^
                       (1/base.weib.shape.a0.02), 1)
-    T2.1 <- round((-log(U2.1)/(gamma1 * exp(X %*% beta.a1.02) *
-                                  base.weib.scale.a1.02^(-base.weib.shape.a1.02)))^
+    T2.1 <- round((-log(U2.1)/(expb102.gamma * base.weib.scale.a1.02^(-base.weib.shape.a1.02)))^
                       (1/base.weib.shape.a1.02), 1)
     #### Simulate Death times for those who were diseased
     for (i in 1:n.sample.temp)
@@ -50,16 +53,14 @@ SimDataWeibFrail <- function(n.sample, params, no.protected = T, no.large = T, c
       if (T2.0[i] >= T1.0[i])
       {
         U12.0i <- runif(1)
-        T2.0[i] <- round((-log(U12.0i)/(gamma0[i] * exp(X[i, ] %*% beta.a0.12) *
-                        base.weib.scale.a0.12^(-base.weib.shape.a0.12)) +
-                          T1.0[i]^base.weib.shape.a0.12) ^ (1/base.weib.shape.a0.12), 1)
+        T2.0[i] <- round((-log(U12.0i)/(expb012.gamma[i] * base.weib.scale.a0.12^(-base.weib.shape.a0.12)) +
+                          T1.0[i]^base.weib.shape.a0.12)^(1/base.weib.shape.a0.12), 1)
         if(T2.0[i]==T1.0[i]) {T2.0[i] <- round(T1.0[i] + runif(1, 0.1, 1), 1)}
        }
       if (T2.1[i] >= T1.1[i])
       {
         U12.1i <- runif(1)
-        T2.1[i] <- round((-log(U12.1i)/(gamma1[i] * exp(X[i, ] %*% beta.a1.12) *
-                                        base.weib.scale.a1.12^(-base.weib.shape.a1.12)) +
+        T2.1[i] <- round((-log(U12.1i)/(expb112.gamma[i] * base.weib.scale.a1.12^(-base.weib.shape.a1.12)) +
                              T1.1[i]^base.weib.shape.a1.12)^(1/base.weib.shape.a1.12), 1)
         if(T2.1[i]==T1.1[i]) {T2.1[i] <-  round(T1.1[i] + runif(1,0.1,1), 1)}
        }}
