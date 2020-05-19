@@ -4,10 +4,10 @@
 # A function to calculate true parameter values
 #Data-generating functions for simulations
 ###########################################################################
-CalcTrueCausalParams <- function(n.sample, params, all.times,
-                                 no.large, no.protected, adjusted = F, tau = NULL)
+CalcTrueCausalParams <- function(n.sample, params, all.times, no.large, no.protected, adjusted = F,
+                                 tau = NULL, RMST.only = F)
 {
-
+if(is.null(tau) & RMST.only==T) {stop("Only RMST is requested, but no tau is supplied")}
 if(n.sample < 10001) {warning(paste0("Hard to believe that n.sample = ", n.sample, "is sufficient to
                                      approximate infinite population"))}
 sim.df <- SimDataWeibFrail(n.sample = n.sample, params, no.large = no.large,
@@ -16,7 +16,8 @@ T1.0 <- sim.df$T1.0
 T1.1 <- sim.df$T1.1
 T2.0 <- sim.df$T2.0
 T2.1 <- sim.df$T2.1
-
+if(RMST.only == F)
+{
 true.eta0 <- mean(T1.0 <= T2.0)
 true.eta1 <- mean(T1.1 <= T2.1)
 true.prop.ad <- mean(T1.0 <= T2.0 & T1.1 <= T2.1)
@@ -181,6 +182,10 @@ list.ret <- list(true.eta0 = true.eta0, true.eta1 = true.eta1,
                    F1.a0.ad = F1.a0.ad, F1.a1.ad = F1.a1.ad, F1.a1.h = F1.a1.h,
                    ATE.T2.ad = NULL, ATE.T2.nd = NULL, ATE.T1.ad = NULL,
                    med.ATE.T2.ad = NULL, med.ATE.T2.nd = NULL, med.ATE.T1.ad = NULL)
+}}
+else {
+  #if RMST.only==T, all nonparam effects are not computed and are not computed nor returned
+  list.ret <- list()
 }
 # add RMST if tau is non null
 if (!is.null(tau))
