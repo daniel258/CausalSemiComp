@@ -44,12 +44,12 @@ CalcRMST <- function(rho, tau, n.sample.sim, data, Xnames, res)
                                   scale = gamma.scale)
   # Sample X values from observed data
   ind.X <- sample(x = 1:n.sample, size = n.sample.sim, replace = T)
-  exp.b001.gamma0.sim <- exp.b001[ind.X, ] * gamma0[ind.X]
-  exp.b002.gamma0.sim <- exp.b002[ind.X, ] * gamma0[ind.X]
-  exp.b012.gamma0.sim <- exp.b012[ind.X, ] * gamma0[ind.X]
-  exp.b101.gamma1.sim <- exp.b101[ind.X, ] * gamma1[ind.X]
-  exp.b102.gamma1.sim <- exp.b102[ind.X, ] * gamma1[ind.X]
-  exp.b112.gamma1.sim <- exp.b112[ind.X, ] * gamma1[ind.X]
+  exp.b001.gamma0.sim <- exp.b001[ind.X] * gamma0[ind.X]
+  exp.b002.gamma0.sim <- exp.b002[ind.X] * gamma0[ind.X]
+  exp.b012.gamma0.sim <- exp.b012[ind.X] * gamma0[ind.X]
+  exp.b101.gamma1.sim <- exp.b101[ind.X] * gamma1[ind.X]
+  exp.b102.gamma1.sim <- exp.b102[ind.X] * gamma1[ind.X]
+  exp.b112.gamma1.sim <- exp.b112[ind.X] * gamma1[ind.X]
   # exp.b001.sim <- exp.b001[ind.X, ]
   # exp.b002.sim <- exp.b002[ind.X, ]
   # exp.b012.sim <- exp.b012[ind.X, ]
