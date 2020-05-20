@@ -16,13 +16,14 @@ T1.0 <- sim.df$T1.0
 T1.1 <- sim.df$T1.1
 T2.0 <- sim.df$T2.0
 T2.1 <- sim.df$T2.1
+true.prop.ad <- mean(T1.0 <= T2.0 & T1.1 <= T2.1)
+true.prop.nd <- mean(T1.0 > T2.0 &  T1.1 > T2.1)
+true.prop.dh <- mean(T1.0 > T2.0 &  T1.1 < T2.1)
 if(RMST.only == F)
 {
 true.eta0 <- mean(T1.0 <= T2.0)
 true.eta1 <- mean(T1.1 <= T2.1)
-true.prop.ad <- mean(T1.0 <= T2.0 & T1.1 <= T2.1)
-true.prop.nd <- mean(T1.0 > T2.0 &  T1.1 > T2.1)
-true.prop.dh <- mean(T1.0 > T2.0 &  T1.1 < T2.1)
+
 
 ############################################################################################################
 e0 <- ecdf(T2.0)
@@ -185,7 +186,7 @@ list.ret <- list(true.eta0 = true.eta0, true.eta1 = true.eta1,
 }}
 else {
   #if RMST.only==T, all nonparam effects are not computed and are not computed nor returned
-  list.ret <- list()
+  list.ret <- list(true.prop.ad = true.prop.ad, true.prop.nd = true.prop.nd, true.prop.dh = true.prop.dh)
 }
 # add RMST if tau is non null
 if (!is.null(tau))
