@@ -56,9 +56,8 @@ EMcausalSC <- function(data, Xnames, max.iter = 10000)
   est.beta.a1.02 <- coef(fit.a1.02)
   est.beta.a0.12  <- coef(fit.a0.12)
   est.beta.a1.12  <- coef(fit.a1.12)
-  old.betas <- new.betas <- naive.betas <-  c(est.beta.a0.01, est.beta.a1.01,
-                                              est.beta.a0.02, est.beta.a1.02,
-                                              est.beta.a0.12, est.beta.a1.12)
+  old.betas <- new.betas <- naive.betas <-  c(est.beta.a0.01, est.beta.a0.02, est.beta.a0.12,
+                                              est.beta.a1.01, est.beta.a1.02, est.beta.a1.12)
   old.thetas <- new.thetas <- c(1,1)
   s.fit.a0.1 <- survfit(fit.a0.01, censor = FALSE)
   s.fit.a0.2 <- survfit(fit.a0.02, censor = FALSE)
@@ -104,6 +103,12 @@ EMcausalSC <- function(data, Xnames, max.iter = 10000)
   while(cond==0 & iter < max.iter)
   {
     iter <- iter + 1
+    # if (iter ==1802)
+    # {
+    #   abb <- 3
+    #   abbc <- 77
+    # }
+    #Daniel::CatIndex(iter)
     ##### E-step
     #####  Per-person posterior distriubtion parametrs
     s.i[A==0] <- H.a0.01 + H.a0.02
@@ -139,23 +144,23 @@ EMcausalSC <- function(data, Xnames, max.iter = 10000)
     est.beta.a1.02 <- coef(fit.a1.02)
     est.beta.a0.12  <- coef(fit.a0.12)
     est.beta.a1.12  <- coef(fit.a1.12)
-    new.betas <- c(est.beta.a0.01, est.beta.a1.01, est.beta.a0.02,
-                   est.beta.a1.02, est.beta.a0.12, est.beta.a1.12)
+    new.betas <- c(est.beta.a0.01, est.beta.a0.02, est.beta.a0.12,
+                   est.beta.a1.01, est.beta.a1.02, est.beta.a1.12)
     ################################################################################################
     ##### Create step functions from all baseline hazard estimators ########
     ################################################################################################
-    s.fit.a0.1 <- survfit(fit.a0.01, censor = FALSE)
-    s.fit.a0.2 <- survfit(fit.a0.02, censor = FALSE)
-    s.fit.a0.12 <- survfit(fit.a0.12, censor = FALSE)
-    s.fit.a1.1 <- survfit(fit.a1.01, censor = FALSE)
-    s.fit.a1.2 <- survfit(fit.a1.02, censor = FALSE)
-    s.fit.a1.12 <- survfit(fit.a1.12, censor = FALSE)
-    step.A0T1 <- stepfun(x = s.fit.a0.1$time, y = c(0, -log(s.fit.a0.1$surv)))
-    step.A0T2 <- stepfun(x = s.fit.a0.2$time, y = c(0, -log(s.fit.a0.2$surv)))
-    step.A0T12 <- stepfun(x = s.fit.a0.12$time, y = c(0, -log(s.fit.a0.12$surv)))
-    step.A1T1 <- stepfun(x = s.fit.a1.1$time, y = c(0, -log(s.fit.a1.1$surv)))
-    step.A1T2 <- stepfun(x = s.fit.a1.2$time, y = c(0, -log(s.fit.a1.2$surv)))
-    step.A1T12 <- stepfun(x = s.fit.a1.12$time, y = c(0, -log(s.fit.a1.12$surv)))
+    # s.fit.a0.1 <- survfit(fit.a0.01, censor = FALSE)
+    # s.fit.a0.2 <- survfit(fit.a0.02, censor = FALSE)
+    # s.fit.a0.12 <- survfit(fit.a0.12, censor = FALSE)
+    # s.fit.a1.1 <- survfit(fit.a1.01, censor = FALSE)
+    # s.fit.a1.2 <- survfit(fit.a1.02, censor = FALSE)
+    # s.fit.a1.12 <- survfit(fit.a1.12, censor = FALSE)
+    # step.A0T1 <- stepfun(x = s.fit.a0.1$time, y = c(0, -log(s.fit.a0.1$surv)))
+    # step.A0T2 <- stepfun(x = s.fit.a0.2$time, y = c(0, -log(s.fit.a0.2$surv)))
+    # step.A0T12 <- stepfun(x = s.fit.a0.12$time, y = c(0, -log(s.fit.a0.12$surv)))
+    # step.A1T1 <- stepfun(x = s.fit.a1.1$time, y = c(0, -log(s.fit.a1.1$surv)))
+    # step.A1T2 <- stepfun(x = s.fit.a1.2$time, y = c(0, -log(s.fit.a1.2$surv)))
+    # step.A1T12 <- stepfun(x = s.fit.a1.12$time, y = c(0, -log(s.fit.a1.12$surv)))
     ################################################################################
     s.fit.a0.1 <- survfit(fit.a0.01, censor = FALSE)
     s.fit.a0.2 <- survfit(fit.a0.02, censor = FALSE)
