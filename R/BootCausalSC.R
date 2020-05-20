@@ -1,6 +1,4 @@
-BootCausalSC <- function(L = 0, T1 = T1, T2 = T2, delta1 = delta1,
-                         delta2 = delta2, A = A, all.times = all.times,
-                         B = 500)
+BootCausalSC <- function(L = 0, T1, T2, delta1, delta2, A, all.times, B = 500)
 {
   n.sample <- length(T1)
 
