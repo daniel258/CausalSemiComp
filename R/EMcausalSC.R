@@ -3,7 +3,7 @@
 # CausalSemiComp
 # EM function for frailty SCM
 ####################################################################################
-EMcausalSC <- function(data, Xnames, max.iter = 10000, w = NULL)
+EMcausalSC <- function(data, Xnames, max.iter = 10000, w = NULL, eps.conv = 0.0001)
 {
   n.sample <- nrow(data)
   Ltime <- "L" %in% colnames(data)
@@ -121,12 +121,12 @@ EMcausalSC <- function(data, Xnames, max.iter = 10000, w = NULL)
   while(cond==0 & iter < max.iter)
   {
     iter <- iter + 1
-    # if (iter ==1802)
-    # {
-    #   abb <- 3
-    #   abbc <- 77
-    # }
-    #Daniel::CatIndex(iter)
+     # if (iter ==928)
+     # {
+     #   abb <- 3
+     #   abbc <- 77
+     # }
+    Daniel::CatIndex(iter)
     ##### E-step
     #####  Per-person posterior distriubtion parametrs
     s.i[A==0] <- H.a0.01 + H.a0.02
@@ -224,17 +224,31 @@ EMcausalSC <- function(data, Xnames, max.iter = 10000, w = NULL)
     H.a1.12 <- step.A1T12(data.predictA1T12$T2) * exp(XmatA1T12%*%est.beta.a1.12)
     H.a1.12.T1 <- step.A1T12(data.predictA1T12$T1) * exp(XmatA1T12%*%est.beta.a1.12)
     ##### New theta values #####
-    new.thetas[1] <- optimize(f = Eloglik, interval = c(0.01, 30),
+    if (is.null(w))
+    {
+      new.thetas[1] <- optimize(f = Eloglik, interval = c(0.01, 30),
+                                delta1 = delta1A0, delta2 = delta2A0,
+                                E.gamma = E.gamma[A==0],
+                                E.log.gamma = E.log.gamma[A==0],
+                                maximum = T)$maximum
+      new.thetas[2] <- optimize(f = Eloglik, interval = c(0.01, 30),
+                                delta1 = delta1A1, delta2 = delta2A1,
+                                E.gamma = E.gamma[A==1],
+                                E.log.gamma = E.log.gamma[A==1],
+                                maximum = T)$maximum
+    } else {
+        new.thetas[1] <- optimize(f = Eloglik, interval = c(0.01, 30),
                               delta1 = delta1A0, delta2 = delta2A0,
                               E.gamma = E.gamma[A==0],
-                              E.log.gamma = E.log.gamma[A==0],
+                              E.log.gamma = E.log.gamma[A==0], w = w[A==0],
                               maximum = T)$maximum
-    new.thetas[2] <- optimize(f = Eloglik, interval = c(0.01, 30),
+        new.thetas[2] <- optimize(f = Eloglik, interval = c(0.01, 30),
                               delta1 = delta1A1, delta2 = delta2A1,
                               E.gamma = E.gamma[A==1],
-                              E.log.gamma = E.log.gamma[A==1],
+                              E.log.gamma = E.log.gamma[A==1], w = w[A==1],
                               maximum = T)$maximum
-    if (max(abs(c(new.thetas - old.thetas, new.betas - old.betas))) < 0.0001)
+    }
+    if (max(abs(c(new.thetas - old.thetas, new.betas - old.betas))) < eps.conv)
     {
       cond <- 1
     }
@@ -247,6 +261,6 @@ EMcausalSC <- function(data, Xnames, max.iter = 10000, w = NULL)
                        step.A0T12 = step.A0T12,  step.A1T1 = step.A1T1,
                        step.A1T2 = step.A1T2, step.A1T12 = step.A1T12)
   list.out <- list(betas = new.betas, thetas = new.thetas, naive.betas = naive.betas,
-                   fit.list = fit.list, H.step.funcs = H.step.funcs, iter = iter)
+                   fit.list = fit.list, H.step.funcs = H.step.funcs, iter = iter, E.gamma = E.gamma)
   return(list.out)
 }
