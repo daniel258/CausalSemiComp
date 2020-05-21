@@ -3,13 +3,20 @@
 # CausalSemiComp
 # EM function for frailty SCM
 ####################################################################################
-EMcausalSC <- function(data, Xnames, max.iter = 10000)
+EMcausalSC <- function(data, Xnames, max.iter = 10000, w = NULL)
 {
   n.sample <- nrow(data)
   Ltime <- "L" %in% colnames(data)
   delta1 <- data$delta1
   delta2 <- data$delta2
   A <- data$A
+  #### If weights were supplied, normalize by A value ###
+  if (!is.null(w)) {
+    if (length(w)!=n.sample) {stop("w should be of the same length as the sample siz")}
+    w[A==0] <- w[A==0]/mean(w[A==0])
+    w[A==1] <- w[A==1]/mean(w[A==1])
+  }
+  data$w <- w  # add the weights to the data
   delta1A0 <- delta1[A==0]
   delta1A1 <- delta1[A==1]
   delta2A0 <- delta2[A==0]
@@ -42,14 +49,25 @@ EMcausalSC <- function(data, Xnames, max.iter = 10000)
                                  paste0(Xnames, collapse= "+") ,
                                  " + offset(log.gamma)"))
   }
-  ########  Initial parameter values ########
 
-  fit.a0.01 <- coxph(formula01, data = new.data.A0)
-  fit.a0.02 <- coxph(formula02,  data = new.data.A0)
-  fit.a0.12 <- coxph(formula12, data = new.data.A0T12)
-  fit.a1.01 <- coxph(formula01, data = new.data.A1)
-  fit.a1.02 <- coxph(formula02, data = new.data.A1)
-  fit.a1.12 <- coxph(formula12, data = new.data.A1T12)
+
+  ########  Initial parameter values ########
+  if (is.null(w))
+  {
+    fit.a0.01 <- coxph(formula01, data = new.data.A0)
+    fit.a0.02 <- coxph(formula02,  data = new.data.A0)
+    fit.a0.12 <- coxph(formula12, data = new.data.A0T12)
+    fit.a1.01 <- coxph(formula01, data = new.data.A1)
+    fit.a1.02 <- coxph(formula02, data = new.data.A1)
+    fit.a1.12 <- coxph(formula12, data = new.data.A1T12)
+  } else {
+    fit.a0.01 <- coxph(formula01, data = new.data.A0, weights = w)
+    fit.a0.02 <- coxph(formula02,  data = new.data.A0, weights = w)
+    fit.a0.12 <- coxph(formula12, data = new.data.A0T12, weights = w)
+    fit.a1.01 <- coxph(formula01, data = new.data.A1, weights = w)
+    fit.a1.02 <- coxph(formula02, data = new.data.A1, weights = w)
+    fit.a1.12 <- coxph(formula12, data = new.data.A1T12, weights = w)
+  }
   est.beta.a0.01 <- coef(fit.a0.01)
   est.beta.a1.01 <- coef(fit.a1.01)
   est.beta.a0.02 <- coef(fit.a0.02)
@@ -59,12 +77,12 @@ EMcausalSC <- function(data, Xnames, max.iter = 10000)
   old.betas <- new.betas <- naive.betas <-  c(est.beta.a0.01, est.beta.a0.02, est.beta.a0.12,
                                               est.beta.a1.01, est.beta.a1.02, est.beta.a1.12)
   old.thetas <- new.thetas <- c(1,1)
-  s.fit.a0.1 <- survfit(fit.a0.01, censor = FALSE)
-  s.fit.a0.2 <- survfit(fit.a0.02, censor = FALSE)
-  s.fit.a0.12 <- survfit(fit.a0.12, censor = FALSE)
-  s.fit.a1.1 <- survfit(fit.a1.01, censor = FALSE)
-  s.fit.a1.2 <- survfit(fit.a1.02,  censor = FALSE)
-  s.fit.a1.12 <- survfit(fit.a1.12, censor = FALSE)
+  s.fit.a0.1 <- survfit(fit.a0.01, censor = FALSE, se.fit = FALSE)
+  s.fit.a0.2 <- survfit(fit.a0.02, censor = FALSE, se.fit = FALSE)
+  s.fit.a0.12 <- survfit(fit.a0.12, censor = FALSE, se.fit = FALSE)
+  s.fit.a1.1 <- survfit(fit.a1.01, censor = FALSE, se.fit = FALSE)
+  s.fit.a1.2 <- survfit(fit.a1.02,  censor = FALSE, se.fit = FALSE)
+  s.fit.a1.12 <- survfit(fit.a1.12, censor = FALSE, se.fit = FALSE)
   step.A0T1 <- stepfun(x = s.fit.a0.1$time,
                        y = c(0, s.fit.a0.1$cumhaz*exp(-sum(est.beta.a0.01*m.X.A0)
                                                       -mean(new.data.A0$log.gamma))))
@@ -123,21 +141,42 @@ EMcausalSC <- function(data, Xnames, max.iter = 10000)
       log(1/new.thetas[1] + s.i[A==0])
     E.log.gamma[A==1] <- digamma(1/new.thetas[2] + delta1A1 + delta2A1) -
       log(1/new.thetas[2] + s.i[A==1])
-    data$log.gamma <- log(E.gamma)
-    new.data.A0 <- data %>% dplyr::filter(A==0)
-    new.data.A1 <- data %>% dplyr::filter(A==1)
-    new.data.A0T12 <- data %>% dplyr::filter(A==0 & delta1==1)
-    new.data.A1T12 <- data %>% dplyr::filter(A==1 & delta1==1)
+    #data$log.gamma <- log(E.gamma)
+    # new.data.A0 <- data %>% dplyr::filter(A==0)
+    # new.data.A1 <- data %>% dplyr::filter(A==1)
+    # new.data.A0T12 <- data %>% dplyr::filter(A==0 & delta1==1)
+    # new.data.A1T12 <- data %>% dplyr::filter(A==1 & delta1==1)
+    log.E.gamma <- log(E.gamma)
+    new.data.A0$log.gamma <- log.E.gamma[A==0]
+    new.data.A1$log.gamma <- log.E.gamma[A==1]
+    new.data.A0T12$log.gamma <- log.E.gamma[A==0 & delta1==1]
+    new.data.A1T12$log.gamma <- log.E.gamma[A==1 & delta1==1]
     ###############################################################################################
     ##### M-step
     #### Conditonially on gamma, fit illness-death PH models
     ###############################################################################################
-    fit.a0.01 <- coxph(formula01, data = new.data.A0)
-    fit.a0.02 <- coxph(formula02,  data = new.data.A0)
-    fit.a0.12 <- coxph(formula12, data = new.data.A0T12)
-    fit.a1.01 <- coxph(formula01, data = new.data.A1)
-    fit.a1.02 <- coxph(formula02, data = new.data.A1)
-    fit.a1.12 <- coxph(formula12, data = new.data.A1T12)
+    if (is.null(w))
+    {
+      fit.a0.01 <- coxph(formula01, data = new.data.A0)
+      fit.a0.02 <- coxph(formula02,  data = new.data.A0)
+      fit.a0.12 <- coxph(formula12, data = new.data.A0T12)
+      fit.a1.01 <- coxph(formula01, data = new.data.A1)
+      fit.a1.02 <- coxph(formula02, data = new.data.A1)
+      fit.a1.12 <- coxph(formula12, data = new.data.A1T12)
+    } else {
+      fit.a0.01 <- coxph(formula01, data = new.data.A0, weights = w)
+      fit.a0.02 <- coxph(formula02,  data = new.data.A0, weights = w)
+      fit.a0.12 <- coxph(formula12, data = new.data.A0T12, weights = w)
+      fit.a1.01 <- coxph(formula01, data = new.data.A1, weights = w)
+      fit.a1.02 <- coxph(formula02, data = new.data.A1, weights = w)
+      fit.a1.12 <- coxph(formula12, data = new.data.A1T12, weights = w)
+    }
+    # fit.a0.01 <- coxph(formula01, data = new.data.A0)
+    # fit.a0.02 <- coxph(formula02,  data = new.data.A0)
+    # fit.a0.12 <- coxph(formula12, data = new.data.A0T12)
+    # fit.a1.01 <- coxph(formula01, data = new.data.A1)
+    # fit.a1.02 <- coxph(formula02, data = new.data.A1)
+    # fit.a1.12 <- coxph(formula12, data = new.data.A1T12)
     est.beta.a0.01 <- coef(fit.a0.01)
     est.beta.a1.01 <- coef(fit.a1.01)
     est.beta.a0.02 <- coef(fit.a0.02)
@@ -149,25 +188,12 @@ EMcausalSC <- function(data, Xnames, max.iter = 10000)
     ################################################################################################
     ##### Create step functions from all baseline hazard estimators ########
     ################################################################################################
-    # s.fit.a0.1 <- survfit(fit.a0.01, censor = FALSE)
-    # s.fit.a0.2 <- survfit(fit.a0.02, censor = FALSE)
-    # s.fit.a0.12 <- survfit(fit.a0.12, censor = FALSE)
-    # s.fit.a1.1 <- survfit(fit.a1.01, censor = FALSE)
-    # s.fit.a1.2 <- survfit(fit.a1.02, censor = FALSE)
-    # s.fit.a1.12 <- survfit(fit.a1.12, censor = FALSE)
-    # step.A0T1 <- stepfun(x = s.fit.a0.1$time, y = c(0, -log(s.fit.a0.1$surv)))
-    # step.A0T2 <- stepfun(x = s.fit.a0.2$time, y = c(0, -log(s.fit.a0.2$surv)))
-    # step.A0T12 <- stepfun(x = s.fit.a0.12$time, y = c(0, -log(s.fit.a0.12$surv)))
-    # step.A1T1 <- stepfun(x = s.fit.a1.1$time, y = c(0, -log(s.fit.a1.1$surv)))
-    # step.A1T2 <- stepfun(x = s.fit.a1.2$time, y = c(0, -log(s.fit.a1.2$surv)))
-    # step.A1T12 <- stepfun(x = s.fit.a1.12$time, y = c(0, -log(s.fit.a1.12$surv)))
-    ################################################################################
-    s.fit.a0.1 <- survfit(fit.a0.01, censor = FALSE)
-    s.fit.a0.2 <- survfit(fit.a0.02, censor = FALSE)
-    s.fit.a0.12 <- survfit(fit.a0.12, censor = FALSE)
-    s.fit.a1.1 <- survfit(fit.a1.01, censor = FALSE)
-    s.fit.a1.2 <- survfit(fit.a1.02,  censor = FALSE)
-    s.fit.a1.12 <- survfit(fit.a1.12, censor = FALSE)
+    s.fit.a0.1 <- survfit(fit.a0.01, censor = FALSE, se.fit = FALSE)
+    s.fit.a0.2 <- survfit(fit.a0.02, censor = FALSE, se.fit = FALSE)
+    s.fit.a0.12 <- survfit(fit.a0.12, censor = FALSE, se.fit = FALSE)
+    s.fit.a1.1 <- survfit(fit.a1.01, censor = FALSE, se.fit = FALSE)
+    s.fit.a1.2 <- survfit(fit.a1.02,  censor = FALSE, se.fit = FALSE)
+    s.fit.a1.12 <- survfit(fit.a1.12, censor = FALSE, se.fit = FALSE)
     step.A0T1 <- stepfun(x = s.fit.a0.1$time,
                          y = c(0, s.fit.a0.1$cumhaz*exp(-sum(est.beta.a0.01*m.X.A0)
                                                         -mean(new.data.A0$log.gamma))))
