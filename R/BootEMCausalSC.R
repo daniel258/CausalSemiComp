@@ -5,15 +5,20 @@ BootEMCausalSC <- function(data, tau, rhos, H.times = NULL, Xnames, max.iter, B)
   if (!is.null(H.times))
   {
     n.H.times <- length(H.times)
-    n.params <- 12 * length(Xnames) + 2 + 6 * n.H.times + 6 * n.rhos # naive betas, betas, thetas, H, causal effects per rho
+#    n.params <- 12 * length(Xnames) + 2 + 6 * n.H.times + 6 * n.rhos # naive betas, betas, thetas, H, causal effects per rho
+    n.params <- 12 * length(Xnames) + 1 + 6 * n.H.times + 6 * n.rhos # naive betas, betas, thetas, H, causal effects per rho
+
   } else {
     n.params <- 12 * length(Xnames) + 2 + 6 * n.rhos # naive betas, betas, thetas, causal effects per rho
   }
   all.bs <- matrix(nr = B, nc = n.params)
   for (b in 1:B)
   {
+    Daniel::CatIndex(b)
     w <- rexp(n.sample)
-    res <- EMcausalSC(data = my.data, Xnames = Xnames, max.iter = max.iter, w = w)
+   #  temp <- sample(1:n.sample, size = n.sample, T)
+   # for(i in 1:n.sample) {w[i] <- sum(temp==i)}
+    res <- EMcausalSC(data = data, Xnames = Xnames, max.iter = max.iter, w = w)
     n.rhos <- length(rhos)
     causal.effects.all.rhos <- vector(length = 6*n.rhos)
     for (j in 1:n.rhos)
