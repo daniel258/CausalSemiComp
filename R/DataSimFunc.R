@@ -17,28 +17,26 @@ SimDataWeibFrail <- function(n.sample, params, no.protected = T, no.large = T, c
   n.sample.temp <- n.sample
   cond.sample <- F
   while (cond.sample==F) {
-    n.sample.temp <- n.sample.temp * 4 # is arbitrary
+    n.sample.temp <- n.sample.temp * 4 # is arbitrary - this is a trick for the case no.protected or no.larger is TRUE
     x1 <- rbinom(n = n.sample.temp, size = 1, prob = 0.5)
     x2 <- rnorm(n.sample.temp)
     X <- cbind(x1, x2)
-    gamma.common <- rgamma(n.sample.temp, shape = gamma.common.shape,
-                           scale = gamma.scale)
-    gamma0 <- gamma.common + rgamma(n.sample.temp, shape = gamma.each.shape,
-                                    scale = gamma.scale)
-    gamma1 <- gamma.common + rgamma(n.sample.temp, shape = gamma.each.shape,
-                                    scale = gamma.scale)
+    gamma.common <- rgamma(n.sample.temp, shape = gamma.common.shape, scale = gamma.scale)
+    gamma0 <- gamma.common + rgamma(n.sample.temp, shape = gamma.each.shape, scale = gamma.scale)
+    gamma1 <- gamma.common + rgamma(n.sample.temp, shape = gamma.each.shape, scale = gamma.scale)
     gamma.out <- cbind(gamma0, gamma1)
     U1.0 <- runif(n.sample.temp)
     U1.1 <- runif(n.sample.temp)
     U2.0 <- runif(n.sample.temp)
     U2.1 <- runif(n.sample.temp)
+    U12.0 <- runif(n.sample.temp)
+    U12.1 <- runif(n.sample.temp)
     expb001.gamma <- gamma0 * exp(X %*% beta.a0.01)
     expb002.gamma <- gamma0 * exp(X %*% beta.a0.02)
     expb012.gamma <- gamma0 * exp(X %*% beta.a0.12)
     expb101.gamma <- gamma1 * exp(X %*% beta.a1.01)
     expb102.gamma <- gamma1 * exp(X %*% beta.a1.02)
     expb112.gamma <- gamma1 * exp(X %*% beta.a1.12)
-
     T1.0 <- round((-log(U1.0)/(expb001.gamma * base.weib.scale.a0.01^(-base.weib.shape.a0.01)))^
                               (1/base.weib.shape.a0.01), 1)
     T1.1 <- round((-log(U1.1)/(expb101.gamma * base.weib.scale.a1.01^(-base.weib.shape.a1.01)))^
@@ -47,28 +45,28 @@ SimDataWeibFrail <- function(n.sample, params, no.protected = T, no.large = T, c
                       (1/base.weib.shape.a0.02), 1)
     T2.1 <- round((-log(U2.1)/(expb102.gamma * base.weib.scale.a1.02^(-base.weib.shape.a1.02)))^
                       (1/base.weib.shape.a1.02), 1)
-    #### Simulate Death times for those who were diseased
+    #### Re-simulate death times for those who were diseased
     for (i in 1:n.sample.temp)
     {
       if (T2.0[i] >= T1.0[i])
       {
-        U12.0i <- runif(1)
+        U12.0i <- U12.0[i]
         T2.0[i] <- round((-log(U12.0i)/(expb012.gamma[i] * base.weib.scale.a0.12^(-base.weib.shape.a0.12)) +
                           T1.0[i]^base.weib.shape.a0.12)^(1/base.weib.shape.a0.12), 1)
         if(T2.0[i]==T1.0[i]) {T2.0[i] <- round(T1.0[i] + runif(1, 0.1, 1), 1)}
        }
       if (T2.1[i] >= T1.1[i])
       {
-        U12.1i <- runif(1)
+        U12.1i <- U12.1[i]
         T2.1[i] <- round((-log(U12.1i)/(expb112.gamma[i] * base.weib.scale.a1.12^(-base.weib.shape.a1.12)) +
                              T1.1[i]^base.weib.shape.a1.12)^(1/base.weib.shape.a1.12), 1)
         if(T2.1[i]==T1.1[i]) {T2.1[i] <-  round(T1.1[i] + runif(1,0.1,1), 1)}
        }}
     out.protected <- (T1.0 < T2.0) & (T1.1 > T2.1)
     out.large <- T2.0 > 50 | T2.1 > 50
-    if(no.protected==T & no.large==T) { out <- out.protected | out.large}
-    if(no.protected==T & no.large==F) { out <- out.protected}
-    if(no.protected==F & no.large==T) { out <-  out.large}
+    if(no.protected==T & no.large==T) {out <- out.protected | out.large}
+    if(no.protected==T & no.large==F) {out <- out.protected}
+    if(no.protected==F & no.large==T) {out <-  out.large}
     if(any(no.protected, no.large))
     {
       T1.0 <- T1.0[!out]
@@ -85,6 +83,13 @@ SimDataWeibFrail <- function(n.sample, params, no.protected = T, no.large = T, c
   T1.1 <- T1.1[1:n.sample]
   T2.0 <- T2.0[1:n.sample]
   T2.1 <- T2.1[1:n.sample]
+  # Fix zeros
+  T2.0[T1.0==0] <- pmax(T2.0[T1.0==0], 0.1)
+  T2.1[T1.1==0] <- pmax(T2.1[T1.1==0], 0.1)
+  T1.0[T1.0==0] <- 0.1
+  T1.1[T1.1==0] <- 0.1
+  T2.0[T2.0==0] <- 0.1
+  T2.1[T2.1==0] <- 0.1
   X <- X[1:n.sample, ]
   gamma.out <- gamma.out[1:n.sample, ]
   C <- round(rexp(n.sample, rate = cens.exp.rate), 1)
