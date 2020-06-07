@@ -1,7 +1,7 @@
 WrapEMCausalSCweightedBoot <- function(data, i = i, tau, rhos, H.times, Xnames,
                                        max.iter, init.thetas)
 {
-  length.out <- 2 + length(Xnames)*6 + (H.times*3) # thetas + betas (naive and standard) + H(H.times)
+  length.out <- 2 + length(Xnames)*6 + (length(H.times)*3) # thetas + betas (naive and standard) + H(H.times)
   n.sample <- nrow(data)
   cond <- T
   try <- 1
