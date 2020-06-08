@@ -41,6 +41,7 @@ while (cond==T) { # cond make sure the bootstrap does not fail
   res.out <- c(res$naive.betas, res$betas, res$thetas,
                H.A001, H.A002, H.A012, H.A101, H.A102, H.A112, try)
   cond <- F
-  }}}
+    }}}
+  cat(res.out)
   return(res.out)
 }
