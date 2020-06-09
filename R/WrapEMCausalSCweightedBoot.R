@@ -6,7 +6,7 @@ WrapEMCausalSCweightedBoot <- function(data, i = i, tau = NULL, rhos = NULL, H.t
   library(CausalSemiComp)
   length.out <- 2 + length(Xnames)*6*2 # thetas + betas (naive and standard)
   if (!is.null(H.times)) {length.out <- length.out + 6*length(H.times)}#+H(H.times)
-  if (!is.null(rho)) {
+  if (!is.null(rhos)) {
     n.rhos <- length(rhos)
     length.out <- length.out + 6*n.rhos}#+causal effects
   n.sample <- nrow(data)
