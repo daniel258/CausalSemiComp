@@ -3,7 +3,7 @@ WrapEMCausalSCweightedBoot <- function(data, i = i, tau, rhos, H.times, Xnames,
 {
   library(dplyr)
   library(survival)
-  #library(CausalSemiComp)
+  library(CausalSemiComp)
   length.out <- 2 + length(Xnames)*6*2 + (length(H.times)*6) # thetas + betas (naive and standard) + H(H.times)
   n.sample <- nrow(data)
   cond <- T
