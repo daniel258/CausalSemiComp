@@ -59,19 +59,19 @@ EMcausalSC <- function(data, Xnames, max.iter = 10000, w = NULL, eps.conv = 0.00
   ########  Initial parameter values ########
   if (is.null(w))
   {
-    fit.a0.01 <- coxph(formula01, data = new.data.A0)
-    fit.a0.02 <- coxph(formula02,  data = new.data.A0)
-    fit.a0.12 <- coxph(formula12, data = new.data.A0T12)
-    fit.a1.01 <- coxph(formula01, data = new.data.A1)
-    fit.a1.02 <- coxph(formula02, data = new.data.A1)
-    fit.a1.12 <- coxph(formula12, data = new.data.A1T12)
+    fit.a0.01 <- survival::coxph(formula01, data = new.data.A0)
+    fit.a0.02 <- survival::coxph(formula02,  data = new.data.A0)
+    fit.a0.12 <- survival::coxph(formula12, data = new.data.A0T12)
+    fit.a1.01 <- survival::coxph(formula01, data = new.data.A1)
+    fit.a1.02 <- survival::coxph(formula02, data = new.data.A1)
+    fit.a1.12 <- survival::coxph(formula12, data = new.data.A1T12)
   } else {
-    fit.a0.01 <- coxph(formula01, data = new.data.A0, weights = w)
-    fit.a0.02 <- coxph(formula02,  data = new.data.A0, weights = w)
-    fit.a0.12 <- coxph(formula12, data = new.data.A0T12, weights = w)
-    fit.a1.01 <- coxph(formula01, data = new.data.A1, weights = w)
-    fit.a1.02 <- coxph(formula02, data = new.data.A1, weights = w)
-    fit.a1.12 <- coxph(formula12, data = new.data.A1T12, weights = w)
+    fit.a0.01 <- survival::coxph(formula01, data = new.data.A0, weights = w)
+    fit.a0.02 <- survival::coxph(formula02,  data = new.data.A0, weights = w)
+    fit.a0.12 <- survival::coxph(formula12, data = new.data.A0T12, weights = w)
+    fit.a1.01 <- survival::coxph(formula01, data = new.data.A1, weights = w)
+    fit.a1.02 <- survival::coxph(formula02, data = new.data.A1, weights = w)
+    fit.a1.12 <- survival::coxph(formula12, data = new.data.A1T12, weights = w)
   }
   est.beta.a0.01 <- coef(fit.a0.01)
   est.beta.a1.01 <- coef(fit.a1.01)
@@ -83,12 +83,12 @@ EMcausalSC <- function(data, Xnames, max.iter = 10000, w = NULL, eps.conv = 0.00
                                               est.beta.a1.01, est.beta.a1.02, est.beta.a1.12)
   old.thetas <- new.thetas <- init.thetas
   #old.theta <- new.theta <- 1
-  s.fit.a0.1 <- survfit(fit.a0.01, censor = FALSE, se.fit = FALSE)
-  s.fit.a0.2 <- survfit(fit.a0.02, censor = FALSE, se.fit = FALSE)
-  s.fit.a0.12 <- survfit(fit.a0.12, censor = FALSE, se.fit = FALSE)
-  s.fit.a1.1 <- survfit(fit.a1.01, censor = FALSE, se.fit = FALSE)
-  s.fit.a1.2 <- survfit(fit.a1.02,  censor = FALSE, se.fit = FALSE)
-  s.fit.a1.12 <- survfit(fit.a1.12, censor = FALSE, se.fit = FALSE)
+  s.fit.a0.1 <- survival::survfit(fit.a0.01, censor = FALSE, se.fit = FALSE)
+  s.fit.a0.2 <- survival::survfit(fit.a0.02, censor = FALSE, se.fit = FALSE)
+  s.fit.a0.12 <- survival::survfit(fit.a0.12, censor = FALSE, se.fit = FALSE)
+  s.fit.a1.1 <- survival::survfit(fit.a1.01, censor = FALSE, se.fit = FALSE)
+  s.fit.a1.2 <- survival::survfit(fit.a1.02,  censor = FALSE, se.fit = FALSE)
+  s.fit.a1.12 <- survival::survfit(fit.a1.12, censor = FALSE, se.fit = FALSE)
   step.A0T1 <- stepfun(x = s.fit.a0.1$time,
                        y = c(0, s.fit.a0.1$cumhaz*exp(-sum(est.beta.a0.01*m.X.A0)
                                                       -mean(new.data.A0$log.gamma))))
@@ -140,52 +140,35 @@ EMcausalSC <- function(data, Xnames, max.iter = 10000, w = NULL, eps.conv = 0.00
     s.i[A==1] <- H.a1.01 + H.a1.02
     s.i[A==0 & delta1==1] <- s.i[A==0 & delta1==1] + H.a0.12 - H.a0.12.T1
     s.i[A==1 & delta1==1] <- s.i[A==1 & delta1==1] + H.a1.12 - H.a1.12.T1
-     E.gamma[A==0] <- (1/new.thetas[1] + delta1A0 + delta2A0) / (1/new.thetas[1] + s.i[A==0])
-     E.gamma[A==1] <- (1/new.thetas[2] + delta1A1 + delta2A1) / (1/new.thetas[2] + s.i[A==1])
-     E.log.gamma[A==0] <- digamma(1/new.thetas[1] + delta1A0 + delta2A0) - log(1/new.thetas[1] + s.i[A==0])
-     E.log.gamma[A==1] <- digamma(1/new.thetas[2] + delta1A1 + delta2A1) - log(1/new.thetas[2] + s.i[A==1])
-    #E.gamma <- (1/new.theta + delta1 + delta2) / (1/new.theta + s.i)
-    #E.log.gamma <- digamma(1/new.theta + delta1 + delta2) - log(1/new.theta + s.i)
-    #data$log.gamma <- log(E.gamma)
-    # new.data.A0 <- data %>% dplyr::filter(A==0)
-    # new.data.A1 <- data %>% dplyr::filter(A==1)
-    # new.data.A0T12 <- data %>% dplyr::filter(A==0 & delta1==1)
-    # new.data.A1T12 <- data %>% dplyr::filter(A==1 & delta1==1)
+    E.gamma[A==0] <- (1/new.thetas[1] + delta1A0 + delta2A0) / (1/new.thetas[1] + s.i[A==0])
+    E.gamma[A==1] <- (1/new.thetas[2] + delta1A1 + delta2A1) / (1/new.thetas[2] + s.i[A==1])
+    E.log.gamma[A==0] <- digamma(1/new.thetas[1] + delta1A0 + delta2A0) - log(1/new.thetas[1] + s.i[A==0])
+    E.log.gamma[A==1] <- digamma(1/new.thetas[2] + delta1A1 + delta2A1) - log(1/new.thetas[2] + s.i[A==1])
     log.E.gamma <- log(E.gamma)
     new.data.A0$log.gamma <- log.E.gamma[A==0]
     new.data.A1$log.gamma <- log.E.gamma[A==1]
     new.data.A0T12$log.gamma <- log.E.gamma[A==0 & delta1==1]
     new.data.A1T12$log.gamma <- log.E.gamma[A==1 & delta1==1]
-    # if(max(abs(log.E.gamma)) > 5) {
-    #   aa <- 3
-    #   bb <- 3
-    # }
     ###############################################################################################
     ##### M-step
     #### Conditonially on gamma, fit illness-death PH models
     ###############################################################################################
     if (is.null(w))
     {
-      fit.a0.01 <- coxph(formula01, data = new.data.A0)
-      fit.a0.02 <- coxph(formula02,  data = new.data.A0)
-      fit.a0.12 <- coxph(formula12, data = new.data.A0T12)
-      fit.a1.01 <- coxph(formula01, data = new.data.A1)
-      fit.a1.02 <- coxph(formula02, data = new.data.A1)
-      fit.a1.12 <- coxph(formula12, data = new.data.A1T12)
+      fit.a0.01 <- survival::coxph(formula01, data = new.data.A0)
+      fit.a0.02 <- survival::coxph(formula02,  data = new.data.A0)
+      fit.a0.12 <- survival::coxph(formula12, data = new.data.A0T12)
+      fit.a1.01 <- survival::coxph(formula01, data = new.data.A1)
+      fit.a1.02 <- survival::coxph(formula02, data = new.data.A1)
+      fit.a1.12 <- survival::coxph(formula12, data = new.data.A1T12)
     } else {
-      fit.a0.01 <- coxph(formula01, data = new.data.A0, weights = w)
-      fit.a0.02 <- coxph(formula02,  data = new.data.A0, weights = w)
-      fit.a0.12 <- coxph(formula12, data = new.data.A0T12, weights = w)
-      fit.a1.01 <- coxph(formula01, data = new.data.A1, weights = w)
-      fit.a1.02 <- coxph(formula02, data = new.data.A1, weights = w)
-      fit.a1.12 <- coxph(formula12, data = new.data.A1T12, weights = w)
+      fit.a0.01 <- survival::coxph(formula01, data = new.data.A0, weights = w)
+      fit.a0.02 <- survival::coxph(formula02,  data = new.data.A0, weights = w)
+      fit.a0.12 <- survival::coxph(formula12, data = new.data.A0T12, weights = w)
+      fit.a1.01 <- survival::coxph(formula01, data = new.data.A1, weights = w)
+      fit.a1.02 <- survival::coxph(formula02, data = new.data.A1, weights = w)
+      fit.a1.12 <- survival::coxph(formula12, data = new.data.A1T12, weights = w)
     }
-    # fit.a0.01 <- coxph(formula01, data = new.data.A0)
-    # fit.a0.02 <- coxph(formula02,  data = new.data.A0)
-    # fit.a0.12 <- coxph(formula12, data = new.data.A0T12)
-    # fit.a1.01 <- coxph(formula01, data = new.data.A1)
-    # fit.a1.02 <- coxph(formula02, data = new.data.A1)
-    # fit.a1.12 <- coxph(formula12, data = new.data.A1T12)
     est.beta.a0.01 <- coef(fit.a0.01)
     est.beta.a1.01 <- coef(fit.a1.01)
     est.beta.a0.02 <- coef(fit.a0.02)
@@ -197,12 +180,12 @@ EMcausalSC <- function(data, Xnames, max.iter = 10000, w = NULL, eps.conv = 0.00
     ################################################################################################
     ##### Create step functions from all baseline hazard estimators ########
     ################################################################################################
-    s.fit.a0.1 <- survfit(fit.a0.01, censor = FALSE, se.fit = FALSE, weights = w)
-    s.fit.a0.2 <- survfit(fit.a0.02, censor = FALSE, se.fit = FALSE, weights = w)
-    s.fit.a0.12 <- survfit(fit.a0.12, censor = FALSE, se.fit = FALSE, weights = w)
-    s.fit.a1.1 <- survfit(fit.a1.01, censor = FALSE, se.fit = FALSE, weights = w)
-    s.fit.a1.2 <- survfit(fit.a1.02,  censor = FALSE, se.fit = FALSE, weights = w)
-    s.fit.a1.12 <- survfit(fit.a1.12, censor = FALSE, se.fit = FALSE, weights = w)
+    s.fit.a0.1 <- survival::survfit(fit.a0.01, censor = FALSE, se.fit = FALSE, weights = w)
+    s.fit.a0.2 <- survival::survfit(fit.a0.02, censor = FALSE, se.fit = FALSE, weights = w)
+    s.fit.a0.12 <- survival::survfit(fit.a0.12, censor = FALSE, se.fit = FALSE, weights = w)
+    s.fit.a1.1 <- survival::survfit(fit.a1.01, censor = FALSE, se.fit = FALSE, weights = w)
+    s.fit.a1.2 <- survival::survfit(fit.a1.02,  censor = FALSE, se.fit = FALSE, weights = w)
+    s.fit.a1.12 <- survival::survfit(fit.a1.12, censor = FALSE, se.fit = FALSE, weights = w)
     step.A0T1 <- stepfun(x = s.fit.a0.1$time,
                          y = c(0, s.fit.a0.1$cumhaz*exp(-sum(est.beta.a0.01*m.X.A0)
                                                         -mean(new.data.A0$log.gamma))))
@@ -245,10 +228,6 @@ EMcausalSC <- function(data, Xnames, max.iter = 10000, w = NULL, eps.conv = 0.00
                                 E.gamma = E.gamma[A==1],
                                 E.log.gamma = E.log.gamma[A==1],
                                 maximum = T)$maximum
-      # new.theta <- optimize(f = Eloglik, interval = c(0.01, 30),
-      #                           delta1 = delta1, delta2 = delta2,
-      #                           E.gamma = E.gamma, E.log.gamma = E.log.gamma,
-      #                           maximum = T)$maximum
     } else {
         new.thetas[1] <- optimize(f = Eloglik, interval = c(0.01, 30),
                               delta1 = delta1A0, delta2 = delta2A0,
@@ -260,21 +239,11 @@ EMcausalSC <- function(data, Xnames, max.iter = 10000, w = NULL, eps.conv = 0.00
                               E.gamma = E.gamma[A==1],
                               E.log.gamma = E.log.gamma[A==1], w = w[A==1],
                               maximum = T)$maximum
-       # new.theta <- optimize(f = Eloglik, interval = c(0.01, 30),
-       #                       delta1 = delta1, delta2 = delta2,
-       #                       E.gamma = E.gamma, E.log.gamma = E.log.gamma, w = w,
-       #                       maximum = T)$maximum
     }
-    if (max(abs(c(new.thetas - old.thetas, new.betas - old.betas))) < eps.conv)
-    #if (max(abs(c(new.theta - old.theta, new.betas - old.betas))) < eps.conv)
-    {
-      cond <- 1
-    }
+    if (max(abs(c(new.thetas - old.thetas, new.betas - old.betas))) < eps.conv) {cond <- 1}
     old.betas <- new.betas
     old.thetas <- new.thetas
-    #old.theta <- new.theta
   }
-  #new.thetas <- new.theta
   fit.list <- list(fit.a0.01 = fit.a0.01, fit.a0.02 = fit.a0.02, fit.a0.12 = fit.a0.12,
                    fit.a1.01 = fit.a1.01, fit.a1.02 = fit.a1.02, fit.a1.12 = fit.a1.12)
   H.step.funcs <- list(step.A0T1 = step.A0T1, step.A0T2 = step.A0T2,

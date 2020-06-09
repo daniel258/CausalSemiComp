@@ -45,6 +45,5 @@ while (cond==T) { # cond make sure the bootstrap does not fail
                H.A001, H.A002, H.A012, H.A101, H.A102, H.A112, try)
   cond <- F
     }}}
-  cat(res.out, "\n")
   return(res.out)
 }
