@@ -8,7 +8,8 @@ WrapEMCausalSCweightedBoot <- function(data, i = i, tau = NULL, rhos = NULL, H.t
   if (!is.null(H.times)) {length.out <- length.out + 6*length(H.times)}#+H(H.times)
   if (!is.null(rhos)) {
     n.rhos <- length(rhos)
-    length.out <- length.out + 6*n.rhos}#+causal effects
+    length.out <- length.out + 6*n.rhos
+    }#+causal effects
   n.sample <- nrow(data)
   cond <- T
   try <- 1
