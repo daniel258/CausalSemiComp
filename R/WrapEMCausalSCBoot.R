@@ -12,7 +12,7 @@ WrapEMCausalSCBoot <- function(data, i = i, tau = NULL, rhos = NULL, H.times = N
     }#+causal effects
   data <- data[i, ]
   res <- tryCatch(EMcausalSC(data = data, Xnames = Xnames, max.iter = max.iter,
-                               w = w, init.thetas = init.thetas), error = function(e) {e})
+                             init.thetas = init.thetas), error = function(e) {e})
   if(inherits(res, "error"))
     {
       res.out <- rep(NA, length.out)
