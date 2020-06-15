@@ -250,6 +250,6 @@ EMcausalSC <- function(data, Xnames, max.iter = 10000, w = NULL, eps.conv = 0.00
                        step.A0T12 = step.A0T12,  step.A1T1 = step.A1T1,
                        step.A1T2 = step.A1T2, step.A1T12 = step.A1T12)
   list.out <- list(betas = new.betas, thetas = new.thetas, naive.betas = naive.betas,
-                   fit.list = fit.list, H.step.funcs = H.step.funcs, iter = iter, E.gamma = E.gamma)
+                   fit.list = fit.list, H.step.funcs = H.step.funcs, iter = iter, E.gamma = E.gamma, mean.A = mean(A))
   return(list.out)
 }

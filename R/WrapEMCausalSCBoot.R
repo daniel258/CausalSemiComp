@@ -1,5 +1,5 @@
 WrapEMCausalSCBoot <- function(data, i = i, tau = NULL, rhos = NULL, H.times = NULL, Xnames,
-                                       max.iter, init.thetas)
+                                       max.iter, init.thetas, one.theta = F)
 {
   library(dplyr)
   library(survival)
@@ -21,7 +21,11 @@ WrapEMCausalSCBoot <- function(data, i = i, tau = NULL, rhos = NULL, H.times = N
         res.out <- rep(NA, length.out)
       }
   else {
-      res.out <- c(res$naive.betas, res$betas, res$thetas)
+      res.out <- c(res$naive.betas, res$betas)
+      if(one.theta==T)
+      {
+        theta.out <-  res$thetas[1] * (1 - res$mean.A) + res$thetas[2]*res$mean.A
+      }
       if (!is.null(H.times))
       {
       H.A001 <- res$H.step.funcs$step.A0T1(H.times)
