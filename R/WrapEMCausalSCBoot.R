@@ -25,7 +25,8 @@ WrapEMCausalSCBoot <- function(data, i = i, tau = NULL, rhos = NULL, H.times = N
       if(one.theta==T)
       {
         theta.out <-  res$thetas[1] * (1 - res$mean.A) + res$thetas[2]*res$mean.A
-      }
+      } else {theta.out <- res$thetas}
+      res.out <- c(res.out, theta.out)
       if (!is.null(H.times))
       {
       H.A001 <- res$H.step.funcs$step.A0T1(H.times)
