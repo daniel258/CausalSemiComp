@@ -11,6 +11,9 @@ WrapEMCausalSCBoot <- function(data, i = i, tau = NULL, rhos = NULL, H.times = N
     length.out <- length.out + 6*n.rhos
     }#+causal effects
   data <- data[i, ]
+  n.sample <- nrow(data)
+  data$T1 <- data$T1 + runif(n = nrow(data), min = 0, max =  0.0001) # a trick to avoid bootstrap-induced ties
+  data$T2 <- data$T2 + runif(n = nrow(data), min = 0, max =  0.0001) # a trick to avoid bootstrap-induced ties
   res <- tryCatch(EMcausalSC(data = data, Xnames = Xnames, max.iter = max.iter,
                              init.thetas = init.thetas), error = function(e) {e})
   if(inherits(res, "error"))

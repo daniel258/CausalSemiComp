@@ -1,7 +1,7 @@
 Package: CausalSemiComp
 Type: Package
 Title: What the Package Does (Title Case)
-Version: 0.1.024
+Version: 0.1.025
 Author: Daniel Nevo
 Maintainer: Daniel Nevo <danielnevo@gmail.com>
 Description: More about what it does (maybe more than one line)
