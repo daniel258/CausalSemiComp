@@ -46,12 +46,12 @@ WrapEMCausalSCBoot <- function(data, i = i, tau = NULL, rhos = NULL, H.times = N
         for (j in 1:n.rhos)
         {
           rho <- rhos[j]
-          causal.effects <- CalcRMST(rho = rho, tau = rho, n.sample.sim = 100000, data = my.data, Xnames = Xnames, res = res)
           st <- (j-1)*6 +1
           ed <- j*6
-          causal.effects.all.rhos[st:ed] <- unlist(causal.effects)
-          res.out <- c(res.out, causal.effects.all.rhos)
+          causal.effects.all.rhos[st:ed] <- CalcRMST(rho = rho, tau = tau, n.sample.sim = 100000, data = data,
+                                                     Xnames = Xnames, res = res)
         }
+        res.out <- c(res.out, causal.effects.all.rhos)
         }}
   return(res.out)
 }

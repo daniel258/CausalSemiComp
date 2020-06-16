@@ -5,7 +5,7 @@
 # and return RMSTs
 ####################################################################################
 
-CalcRMST <- function(rho, tau, n.sample.sim, data, Xnames, res)
+CalcRMST <- function(rho, tau, n.sample.sim, data, Xnames, res, list.out = T)
 {
 
   if(n.sample.sim < 10001) {warning(paste0("Hard to believe that n.sample = ", n.sample.sim,
@@ -19,6 +19,7 @@ CalcRMST <- function(rho, tau, n.sample.sim, data, Xnames, res)
   XmatA1 <- as.matrix(select(data.predictA1, Xnames))
   XmatA0T12 <- as.matrix(select(data.predictA0T12, Xnames))
   XmatA1T12 <- as.matrix(select(data.predictA1T12, Xnames))
+  m.A1 <- mean(data$A==1)
   m.X.A0 <- apply(XmatA0, 2, mean)
   m.X.A1 <- apply(XmatA1, 2, mean)
   m.X.A0T12 <- apply(XmatA0T12, 2, mean)
@@ -31,9 +32,8 @@ CalcRMST <- function(rho, tau, n.sample.sim, data, Xnames, res)
   exp.b101 <- exp(Xmat %*% coef(res$fit.list$fit.a1.01))
   exp.b102 <- exp(Xmat %*% coef(res$fit.list$fit.a1.02))
   exp.b112 <- exp(Xmat %*% coef(res$fit.list$fit.a1.12))
-  # Sample bivariate fraily from gamma distribution
-  theta.est <- (res$thetas[1] * sum(data$A==0) +
-                  res$thetas[2] * sum(data$A==1))/nrow(data)
+  # Sample bivariate frailty from gamma distribution
+  theta.est <- (1 - m.A1) * res$thetas[1] + m.A1 * res$thetas[2]
   gamma.scale <- theta.est
   gamma.common.shape <- rho/theta.est
   gamma.each.shape <-  (1 - rho)/theta.est
@@ -50,19 +50,13 @@ CalcRMST <- function(rho, tau, n.sample.sim, data, Xnames, res)
   exp.b101.gamma1.sim <- exp.b101[ind.X] * gamma1[ind.X]
   exp.b102.gamma1.sim <- exp.b102[ind.X] * gamma1[ind.X]
   exp.b112.gamma1.sim <- exp.b112[ind.X] * gamma1[ind.X]
-  # exp.b001.sim <- exp.b001[ind.X, ]
-  # exp.b002.sim <- exp.b002[ind.X, ]
-  # exp.b012.sim <- exp.b012[ind.X, ]
-  # exp.b101.sim <- exp.b101[ind.X, ]
-  # exp.b102.sim <- exp.b102[ind.X, ]
-  # exp.b112.sim <- exp.b112[ind.X, ]
   step.A0T1 <- res$H.step.funcs$step.A0T1
   step.A0T2 <- res$H.step.funcs$step.A0T2
   step.A0T12 <- res$H.step.funcs$step.A0T12
   step.A1T1 <- res$H.step.funcs$step.A1T1
   step.A1T2 <- res$H.step.funcs$step.A1T2
   step.A1T12 <- res$H.step.funcs$step.A1T12
-  # Replace values larger with tau with tau (later also fix probs)
+  # Replace values larger than tau with tau (later also fix probs)
   A0T1.times <- pmin(knots(step.A0T1), tau) %>% unique
   A0T2.times <- pmin(knots(step.A0T2), tau) %>% unique
   A0T12.times <- pmin(knots(step.A0T12), tau) %>% unique
@@ -74,24 +68,10 @@ CalcRMST <- function(rho, tau, n.sample.sim, data, Xnames, res)
   # For now, only sample from event times
   for(i in 1:n.sample.sim)
   {
-    step.S.a0.01i <- function(t, ebg001) {exp(-step.A0T1(t) * exp.b001.gamma0.sim[i])}
-    step.S.a0.02i <- function(t, ebg002) {exp(-step.A0T2(t) * exp.b002.gamma0.sim[i])}
-    #step.S.a0.12i <- function(t, ebg012) {exp(-step.A0T12(t) * exp.b012.gamma0.sim[i])}
-    # step.S.a0.01i <- function(t) {exp(-step.A0T1(t) * exp.b001.gamma0.sim[i])}
-    # step.S.a0.02i <- function(t) {exp(-step.A0T2(t) * exp.b002.gamma0.sim[i])}
-    # step.S.a0.12i <- function(t) {exp(-step.A0T12(t) * exp.b012.gamma0.sim[i])}
-    #H.a0.12.T1 <- step.A0T12(data.predictA0T12$T1) * exp.b012.sim[i]
-    step.S.a1.01i <- function(t) {exp(-step.A1T1(t) * exp.b101.gamma1.sim[i])}
-    step.S.a1.02i <- function(t) {exp(-step.A1T2(t) * exp.b102.gamma1.sim[i])}
-  #  step.S.a1.12i <- function(t) {exp(-step.A1T12(t) * exp.b112.gamma1.sim[i])}
-  # step.S.a0.01i <- function(t) {exp(-step.A0T1(t) * exp.b001.sim[i] * gamma0[i])}
-  # step.S.a0.02i <- function(t) {exp(-step.A0T2(t) * exp.b002.sim[i] * gamma0[i])}
-  # step.S.a0.12i <- function(t) {exp(-step.A0T12(t) * exp.b012.sim[i] * gamma0[i])}
-  # #H.a0.12.T1 <- step.A0T12(data.predictA0T12$T1) * exp.b012.sim[i]
-  # step.S.a1.01i <- function(t) {exp(-step.A1T1(t) * exp.b101.sim[i] * gamma1[i])}
-  # step.S.a1.02i <- function(t) {exp(-step.A1T2(t) * exp.b102.sim[i] * gamma1[i])}
-  # step.S.a1.12i <- function(t) {exp(-step.A1T12(t) * exp.b112.sim[i] * gamma1[i])}
-  #H.a1.12.T1 <- step.A1T12(data.predictA1T12$T1) * exp.b112.sim[i]
+  step.S.a0.01i <- function(t, ebg001) {exp(-step.A0T1(t) * exp.b001.gamma0.sim[i])}
+  step.S.a0.02i <- function(t, ebg002) {exp(-step.A0T2(t) * exp.b002.gamma0.sim[i])}
+  step.S.a1.01i <- function(t) {exp(-step.A1T1(t) * exp.b101.gamma1.sim[i])}
+  step.S.a1.02i <- function(t) {exp(-step.A1T2(t) * exp.b102.gamma1.sim[i])}
   # Assign remaining prob mass to tau
   pr.A0T1 <- -diff(c(1, step.S.a0.01i(A0T1.times)))
   pr.A0T1[length(pr.A0T1)] <- pr.A0T1[length(pr.A0T1)] + 1 - sum(pr.A0T1)
@@ -102,7 +82,6 @@ CalcRMST <- function(rho, tau, n.sample.sim, data, Xnames, res)
   pr.A1T2 <- -diff(c(1, step.S.a1.02i(A1T2.times)))
   pr.A1T2[length(pr.A1T2)] <- pr.A1T2[length(pr.A1T2)] + 1 - sum(pr.A1T2)
   #### Simulate T1, T2
-
   T1.0.sim[i] <- sample(A0T1.times, 1, replace = T, prob = pr.A0T1)
   T2.0.sim[i] <- sample(A0T2.times, 1, replace = T, prob = pr.A0T2)
   T1.1.sim[i] <- sample(A1T1.times, 1, replace = T, prob = pr.A1T1)
@@ -142,7 +121,11 @@ CalcRMST <- function(rho, tau, n.sample.sim, data, Xnames, res)
   med.ATE.T2.ad <- median(T2.1.sim[ad]) - median(T2.0.sim[ad])
   med.ATE.T2.nd <- median(T2.1.sim[nd]) - median(T2.0.sim[nd])
   med.ATE.T1.ad <- median(T1.1.sim[ad]) - median(T1.0.sim[ad])
-  list.ret <- list(ATE.T2.ad = ATE.T2.ad, ATE.T2.nd = ATE.T2.nd, ATE.T1.ad = ATE.T1.ad,
+  if (list.out== T) {
+      ret <- list(ATE.T2.ad = ATE.T2.ad, ATE.T2.nd = ATE.T2.nd, ATE.T1.ad = ATE.T1.ad,
                    med.ATE.T2.ad = med.ATE.T2.ad, med.ATE.T2.nd = med.ATE.T2.nd, med.ATE.T1.ad = med.ATE.T1.ad)
-  return(list.ret)
+  } else {
+     ret <- c(ATE.T2.ad, ATE.T2.nd, ATE.T1.ad, med.ATE.T2.ad, med.ATE.T2.nd, med.ATE.T1.ad)
+  }
+  return(ret)
 }
