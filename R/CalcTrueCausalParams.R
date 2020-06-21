@@ -5,7 +5,7 @@
 #Data-generating functions for simulations
 ###########################################################################
 CalcTrueCausalParams <- function(n.sample, params, all.times, no.large, no.protected, adjusted = F,
-                                 tau = NULL, RMST.only = F)
+                                 tau = NULL, X = NULL, RMST.only = F)
 {
 if(is.null(tau) & RMST.only==T) {stop("Only RMST is requested, but no tau is supplied")}
 if(n.sample < 10001) {warning(paste0("Hard to believe that n.sample = ", n.sample, "is sufficient to
