@@ -8,8 +8,9 @@
 # my trick is to simulate more than needed, throw out "dp" and then keep
 # only desired sample size
 SimDataWeibFrail <- function(n.sample, params, no.protected = T, no.large = T, cens.exp.rate = 0.1,
-                             cens.admin = 200)
+                             cens.admin = 200, X = NULL)
 {
+  if (!is.null(X) & (no.large | no.protected)) stop("Can't specify X and ask no large or no protected")
   list2env(params, envir = environment())
   gamma.scale <- theta
   gamma.common.shape <- rho/theta
@@ -18,9 +19,16 @@ SimDataWeibFrail <- function(n.sample, params, no.protected = T, no.large = T, c
   cond.sample <- F
   while (cond.sample==F) {
     n.sample.temp <- n.sample.temp * 4 # is arbitrary - this is a trick for the case no.protected or no.larger is TRUE
-    x1 <- rbinom(n = n.sample.temp, size = 1, prob = 0.5)
-    x2 <- rnorm(n.sample.temp)
-    X <- cbind(x1, x2)
+    if (is.null(X))
+    {
+      x1 <- rbinom(n = n.sample.temp, size = 1, prob = 0.5)
+      x2 <- rnorm(n.sample.temp)
+      X <- cbind(x1, x2)
+    } else {
+      n.times <- ceiling(n.sample.temp/nrow(X))
+      X <- do.call(rbind, replicate(n.times, X, simplify=F)) %>% as.matrix
+      n.sample.temp <- nrow(X)
+    }
     gamma.common <- rgamma(n.sample.temp, shape = gamma.common.shape, scale = gamma.scale)
     gamma0 <- gamma.common + rgamma(n.sample.temp, shape = gamma.each.shape, scale = gamma.scale)
     gamma1 <- gamma.common + rgamma(n.sample.temp, shape = gamma.each.shape, scale = gamma.scale)
