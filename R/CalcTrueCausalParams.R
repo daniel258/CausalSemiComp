@@ -4,14 +4,20 @@
 # A function to calculate true parameter values
 #Data-generating functions for simulations
 ###########################################################################
-CalcTrueCausalParams <- function(n.sample, params, all.times, no.large, no.protected, adjusted = F,
+CalcTrueCausalParams <- function(n.sample, params, all.times = NULL, no.large, no.protected, adjusted = F,
                                  tau = NULL, X = NULL, RMST.only = F)
 {
 if(is.null(tau) & RMST.only==T) {stop("Only RMST is requested, but no tau is supplied")}
 if(n.sample < 10001) {warning(paste0("Hard to believe that n.sample = ", n.sample, "is sufficient to
                                      approximate infinite population"))}
-sim.df <- SimDataWeibFrail(n.sample = n.sample, params, no.large = no.large,
+if (is.null(X))
+  {
+  sim.df <- SimDataWeibFrail(n.sample = n.sample, params, no.large = no.large,
                            no.protected = no.protected, cens.exp.rate = 0.000001)
+} else {
+  sim.df <- SimDataWeibFrail(n.sample = n.sample, params, no.large = no.large, X = X,
+                             no.protected = no.protected, cens.exp.rate = 0.000001)
+  }
 T1.0 <- sim.df$T1.0
 T1.1 <- sim.df$T1.1
 T2.0 <- sim.df$T2.0
@@ -191,12 +197,12 @@ else {
 # add RMST if tau is non null
 if (!is.null(tau))
 {
-  ad <- (T1.0 <= tau) & (T1.1 <= tau)
-  nd <- (T1.0 > tau) & (T1.1 > tau)
   T1.0.tau <- pmin(T1.0, tau)
   T1.1.tau <- pmin(T1.1, tau)
   T2.0.tau <- pmin(T2.0, tau)
   T2.1.tau <- pmin(T2.1, tau)
+  ad <- (T1.0.tau < T2.0.tau) & (T1.1.tau < T2.1.tau)
+  nd <- (T1.0.tau >= T2.0.tau) & (T1.1.tau >= T2.1.tau)
   ########################################################
   ATE.T2.ad <- mean(T2.1.tau[ad] - T2.0.tau[ad])
   ATE.T2.nd <- mean(T2.1.tau[nd] - T2.0.tau[nd])
@@ -213,4 +219,9 @@ if (!is.null(tau))
 }
 ########################################################
 return(list.ret)
+# list.ret2 <- list(T1.0 = T1.0, T2.0 = T2.0,
+#                   T1.1 = T1.1, T2.1 = T2.1,
+#                   T1.0.tau = T1.0.tau, T2.0.tau = T2.0.tau,
+#                   T1.1.tau = T1.1.tau, T2.1.tau = T2.1.tau)
+# return(list.ret2)
 }
