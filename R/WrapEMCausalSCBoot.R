@@ -1,5 +1,5 @@
 WrapEMCausalSCBoot <- function(data, i = i, tau = NULL, rhos = NULL, H.times = NULL, Xnames,
-                                       max.iter, init.thetas, one.theta = F)
+                               population, max.iter, init.thetas, one.theta = F)
 {
   library(dplyr)
   library(survival)
@@ -48,8 +48,9 @@ WrapEMCausalSCBoot <- function(data, i = i, tau = NULL, rhos = NULL, H.times = N
           rho <- rhos[j]
           st <- (j-1)*6 +1
           ed <- j*6
-          causal.effects.all.rhos[st:ed] <- CalcRMST(rho = rho, tau = tau, n.sample.sim = 100000, data = data,
-                                                     Xnames = Xnames, res = res)
+          causal.effects.all.rhos[st:ed] <- calcRMST(rho = all.rhos[k], tau = tau, n.gamma.vals = 500, n.sample.pers = 500,
+                                                    population = population, data = my.data, Xnames = Xnames, res = res,
+                                                    list.out = F)
         }
         res.out <- c(res.out, causal.effects.all.rhos)
         }}
