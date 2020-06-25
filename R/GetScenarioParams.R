@@ -76,8 +76,8 @@ GetScenarioParams <- function(scenario.num)
   }
   if (floor(scenario.num/10000)==4)
   {
-    base.weib.scale.a0.01 <- 10
-    base.weib.scale.a1.01 <- 7.5
+    base.weib.scale.a0.01 <- 7.5
+    base.weib.scale.a1.01 <- 5
     base.weib.scale.a0.02 <- 7.5
     base.weib.scale.a1.02 <- 5
     base.weib.scale.a0.12 <- 15
