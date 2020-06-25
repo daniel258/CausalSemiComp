@@ -95,7 +95,7 @@ GetScenarioParams <- function(scenario.num)
     beta.a1.02 <- log(c(1, 2.5))
     beta.a1.12 <- log(c(0.5, 2))
     if ((scenario.num %% 10) ==1) {theta <- 2/3} #( Kendall's tau 0.25)
-    if ((scenario.num %% 10) ==2) {theta <- 6} #( Kendall's tau 0.75)
+    if ((scenario.num %% 10) ==2) {theta <- 2} #( Kendall's tau 0.5)
     #theta <- 6
     #rho <- 0.8
     rho <- round(scenario.num/10)/100 - 40
