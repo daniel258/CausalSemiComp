@@ -48,7 +48,7 @@ WrapEMCausalSCBoot <- function(data, i = i, tau = NULL, rhos = NULL, H.times = N
           rho <- rhos[j]
           st <- (j-1)*6 +1
           ed <- j*6
-          causal.effects.all.rhos[st:ed] <- CalcRMST(rho = all.rhos[k], tau = tau, n.gamma.vals = 500, n.sample.pers = 500,
+          causal.effects.all.rhos[st:ed] <- CalcRMST(rho = rho, tau = tau, n.gamma.vals = 500, n.sample.pers = 500,
                                                     population = population, data = data, Xnames = Xnames, res = res,
                                                     list.out = F)
         }
