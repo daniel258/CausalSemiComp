@@ -5,7 +5,7 @@
 # and return RMSTs
 ####################################################################################
 
-CalcRMST <- function(rho, tau, n.gamma.vals, n.sample.pers, population, Xnames, data, res, list.out = T)
+CalcRMST <- function(rho, tau, n.gamma.vals, n.sample.pers, population, Xnames, data, res, list.out = T, detailed = F)
 {
   # Data wrangling to be used for teasing out the baseline curve
   n.X.vals <- nrow(population)
@@ -121,20 +121,50 @@ CalcRMST <- function(rho, tau, n.gamma.vals, n.sample.pers, population, Xnames, 
     }}
 
   #### Calculate causal effects
+  # ad <- (T1.0.sim < T2.0.sim) & (T1.1.sim < T2.1.sim)
+  # nd <- (T1.0.sim >= T2.0.sim) & (T1.1.sim >= T2.1.sim)
   ad <- (T1.0.sim < T2.0.sim) & (T1.1.sim < T2.1.sim)
   nd <- (T1.0.sim >= T2.0.sim) & (T1.1.sim >= T2.1.sim)
   ########################################################
-  ATE.T2.ad <- mean(T2.1.sim[ad] - T2.0.sim[ad])
-  ATE.T2.nd <- mean(T2.1.sim[nd] - T2.0.sim[nd])
-  ATE.T1.ad <- mean(T1.1.sim[ad] - T1.0.sim[ad])
-  med.ATE.T2.ad <- median(T2.1.sim[ad]) - median(T2.0.sim[ad])
-  med.ATE.T2.nd <- median(T2.1.sim[nd]) - median(T2.0.sim[nd])
-  med.ATE.T1.ad <- median(T1.1.sim[ad]) - median(T1.0.sim[ad])
+  mean.T2.ad.a1 <- mean(T2.1.sim[ad])
+  mean.T2.ad.a0 <- mean(T2.0.sim[ad])
+  mean.T2.nd.a1 <- mean(T2.1.sim[nd])
+  mean.T2.nd.a0 <- mean(T2.0.sim[nd])
+  mean.T1.ad.a1 <- mean(T1.1.sim[ad])
+  mean.T1.ad.a0 <- mean(T1.0.sim[ad])
+  med.T2.ad.a1 <- median(T2.1.sim[ad])
+  med.T2.ad.a0 <- median(T2.0.sim[ad])
+  med.T2.nd.a1 <- median(T2.1.sim[nd])
+  med.T2.nd.a0 <- median(T2.0.sim[nd])
+  med.T1.ad.a1 <- median(T1.1.sim[ad])
+  med.T1.ad.a0 <- median(T1.0.sim[ad])
+  ATE.T2.ad <- mean.T2.ad.a1 - mean.T2.ad.a0
+  ATE.T2.nd <- mean.T2.nd.a1 - mean.T2.nd.a0
+  ATE.T1.ad <- mean.T1.ad.a1 - mean.T1.ad.a0
+  med.ATE.T2.ad <- med.T2.ad.a1 - med.T2.ad.a0
+  med.ATE.T2.nd <- med.T2.nd.a1 - med.T2.nd.a0
+  med.ATE.T1.ad <- med.T1.ad.a1 - med.T1.ad.a0
   if (list.out== T) {
-      ret <- list(ATE.T2.ad = ATE.T2.ad, ATE.T2.nd = ATE.T2.nd, ATE.T1.ad = ATE.T1.ad,
-                   med.ATE.T2.ad = med.ATE.T2.ad, med.ATE.T2.nd = med.ATE.T2.nd, med.ATE.T1.ad = med.ATE.T1.ad)
+    if (detailed == T) {
+      ret <- list(mean.T2.ad.a1 = mean.T2.ad.a1, mean.T2.ad.a0 = mean.T2.ad.a0,
+                  mean.T1.ad.a1 = mean.T1.ad.a1, mean.T1.ad.a0 = mean.T1.ad.a0,
+                  mean.T2.nd.a1 = mean.T2.nd.a1, mean.T2.nd.a0 = mean.T2.nd.a0,
+                  med.T2.ad.a1 = med.T1.ad.a1, med.T2.ad.a0 = med.T2.ad.a0,
+                  med.T1.ad.a1 = med.T1.ad.a1, med.T1.ad.a0 = med.T1.ad.a0,
+                  med.T2.nd.a1 = med.T2.nd.a1, med.T2.nd.a0 = med.T2.nd.a0,
+        ATE.T2.ad = ATE.T2.ad, ATE.T2.nd = ATE.T2.nd, ATE.T1.ad = ATE.T1.ad,
+                   med.ATE.T2.ad = med.ATE.T2.ad, med.ATE.T2.nd = med.ATE.T2.nd, med.ATE.T1.ad = med.ATE.T1.ad,
+        T1.0.sim = T1.0.sim, T1.1.sim = T1.0.sim, T2.0.sim = T2.0.sim, T2.1.sim = T2.1.sim, ad = ad, nd = nd) }
+    else {
+      ret <- list(mean.T2.ad.a1 = mean.T2.ad.a1, mean.T2.ad.a0 = mean.T2.ad.a0,
+                  mean.T1.ad.a1 = mean.T1.ad.a1, mean.T1.ad.a0 = mean.T1.ad.a0,
+                  mean.T2.nd.a1 = mean.T2.nd.a1, mean.T2.nd.a0 = mean.T2.nd.a0)
+    }
   } else {
-     ret <- c(ATE.T2.ad, ATE.T2.nd, ATE.T1.ad, med.ATE.T2.ad, med.ATE.T2.nd, med.ATE.T1.ad)
+     ret <- c(mean.T2.ad.a1, mean.T2.ad.a0, mean.T1.ad.a1, mean.T1.ad.a0,
+              mean.T2.nd.a1, mean.T2.nd.a0, med.T2.ad.a1, med.T2.ad.a0,
+              med.T1.ad.a1, med.T1.ad.a0, med.T2.nd.a1, med.T2.nd.a0,
+              ATE.T2.ad, ATE.T2.nd, ATE.T1.ad, med.ATE.T2.ad, med.ATE.T2.nd, med.ATE.T1.ad)
   }
   return(ret)
 }

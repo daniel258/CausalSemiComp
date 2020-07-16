@@ -204,18 +204,46 @@ if (!is.null(tau))
   ad <- (T1.0.tau < T2.0.tau) & (T1.1.tau < T2.1.tau)
   nd <- (T1.0.tau >= T2.0.tau) & (T1.1.tau >= T2.1.tau)
   ########################################################
+  mean.T2.ad.a1 <- mean(T2.1.tau[ad])
+  mean.T2.ad.a0 <- mean(T2.0.tau[ad])
+  mean.T1.ad.a1 <- mean(T1.1.tau[ad])
+  mean.T1.ad.a0 <- mean(T1.0.tau[ad])
+  mean.T2.nd.a1 <- mean(T2.1.tau[nd])
+  mean.T2.nd.a0 <- mean(T2.0.tau[nd])
+  med.T2.ad.a1 <- median(T2.1.tau[ad])
+  med.T2.ad.a0 <- median(T2.0.tau[ad])
+  med.T1.ad.a1 <- median(T1.1.tau[ad])
+  med.T1.ad.a0 <- median(T1.0.tau[ad])
+  med.T2.nd.a1 <- median(T2.1.tau[nd])
+  med.T2.nd.a0 <- median(T2.0.tau[nd])
   ATE.T2.ad <- mean(T2.1.tau[ad] - T2.0.tau[ad])
   ATE.T2.nd <- mean(T2.1.tau[nd] - T2.0.tau[nd])
   ATE.T1.ad <- mean(T1.1.tau[ad] - T1.0.tau[ad])
   med.ATE.T2.ad <- median(T2.1.tau[ad]) - median(T2.0.tau[ad])
   med.ATE.T2.nd <- median(T2.1.tau[nd]) - median(T2.0.tau[nd])
   med.ATE.T1.ad <- median(T1.1.tau[ad]) - median(T1.0.tau[ad])
+  list.ret$mean.T2.ad.a1 <- mean.T2.ad.a1
+  list.ret$mean.T2.ad.a0 <- mean.T2.ad.a0
+  list.ret$mean.T1.ad.a1 <- mean.T1.ad.a1
+  list.ret$mean.T1.ad.a0 <- mean.T1.ad.a0
+  list.ret$mean.T2.nd.a1 <- mean.T2.nd.a1
+  list.ret$mean.T2.nd.a0 <- mean.T2.nd.a0
+  list.ret$med.T2.ad.a1 <- med.T2.ad.a1
+  list.ret$med.T2.ad.a0 <- med.T2.ad.a0
+  list.ret$med.T1.ad.a1 <- med.T1.ad.a1
+  list.ret$med.T1.ad.a0 <- med.T1.ad.a0
+  list.ret$med.T2.nd.a1 <- med.T2.nd.a1
+  list.ret$med.T2.nd.a0 <- med.T2.nd.a0
   list.ret$ATE.T2.ad <- ATE.T2.ad
   list.ret$ATE.T2.nd <- ATE.T2.nd
   list.ret$ATE.T1.ad <- ATE.T1.ad
   list.ret$med.ATE.T2.ad <- med.ATE.T2.ad
   list.ret$med.ATE.T2.nd <- med.ATE.T2.nd
   list.ret$med.ATE.T1.ad <- med.ATE.T1.ad
+  # list.ret$T1.0 = T1.0; list.ret$T2.0 = T2.0
+  # list.ret$T1.1 = T1.1; list.ret$T2.1 = T2.1
+  # list.ret$T1.0.tau = T1.0.tau; list.ret$T2.0.tau = T2.0.tau
+  # list.ret$T1.1.tau = T1.1.tau; list.ret$T2.1.tau = T2.1.tau
 }
 ########################################################
 return(list.ret)
