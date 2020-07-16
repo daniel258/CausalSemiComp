@@ -247,9 +247,4 @@ if (!is.null(tau))
 }
 ########################################################
 return(list.ret)
-# list.ret2 <- list(T1.0 = T1.0, T2.0 = T2.0,
-#                   T1.1 = T1.1, T2.1 = T2.1,
-#                   T1.0.tau = T1.0.tau, T2.0.tau = T2.0.tau,
-#                   T1.1.tau = T1.1.tau, T2.1.tau = T2.1.tau)
-# return(list.ret2)
 }

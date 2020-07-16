@@ -156,15 +156,17 @@ CalcRMST <- function(rho, tau, n.gamma.vals, n.sample.pers, population, Xnames, 
                    med.ATE.T2.ad = med.ATE.T2.ad, med.ATE.T2.nd = med.ATE.T2.nd, med.ATE.T1.ad = med.ATE.T1.ad,
         T1.0.sim = T1.0.sim, T1.1.sim = T1.0.sim, T2.0.sim = T2.0.sim, T2.1.sim = T2.1.sim, ad = ad, nd = nd) }
     else {
-      ret <- list(mean.T2.ad.a1 = mean.T2.ad.a1, mean.T2.ad.a0 = mean.T2.ad.a0,
-                  mean.T1.ad.a1 = mean.T1.ad.a1, mean.T1.ad.a0 = mean.T1.ad.a0,
-                  mean.T2.nd.a1 = mean.T2.nd.a1, mean.T2.nd.a0 = mean.T2.nd.a0)
+      ret <- list(ATE.T2.ad = ATE.T2.ad, ATE.T2.nd = ATE.T2.nd, ATE.T1.ad = ATE.T1.ad,
+                  med.ATE.T2.ad = med.ATE.T2.ad, med.ATE.T2.nd = med.ATE.T2.nd, med.ATE.T1.ad = med.ATE.T1.ad)
     }
   } else {
+    if (detailed == T) {
      ret <- c(mean.T2.ad.a1, mean.T2.ad.a0, mean.T1.ad.a1, mean.T1.ad.a0,
               mean.T2.nd.a1, mean.T2.nd.a0, med.T2.ad.a1, med.T2.ad.a0,
               med.T1.ad.a1, med.T1.ad.a0, med.T2.nd.a1, med.T2.nd.a0,
               ATE.T2.ad, ATE.T2.nd, ATE.T1.ad, med.ATE.T2.ad, med.ATE.T2.nd, med.ATE.T1.ad)
-  }
+     } else {
+     ret <- c(ATE.T2.ad, ATE.T2.nd, ATE.T1.ad, med.ATE.T2.ad, med.ATE.T2.nd, med.ATE.T1.ad)
+  }}
   return(ret)
 }
