@@ -43,7 +43,7 @@ WrapEMCausalSCBoot <- function(data, i = i, tau = NULL, rhos = NULL, H.times = N
       }
       if (!is.null(rhos)) {
         n.rhos <- length(rhos)
-        causal.effects.all.rhos <- vector(length = 6*n.rhos)
+        causal.effects.all.rhos <- vector(length = 8*n.rhos)
         for (j in 1:n.rhos)
         {
           rho <- rhos[j]
