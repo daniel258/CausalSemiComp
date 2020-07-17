@@ -9,7 +9,7 @@ WrapEMCausalSCBoot <- function(data, i = i, tau = NULL, rhos = NULL, H.times = N
   if (!is.null(H.times)) {length.out <- length.out + 6*length(H.times)}#+H(H.times)
   if (!is.null(rhos)) {
     n.rhos <- length(rhos)
-    length.out <- length.out + 6*n.rhos
+    length.out <- length.out + 8*n.rhos
     }#+causal effects
   data <- data[i, ]
   n.sample <- nrow(data)
