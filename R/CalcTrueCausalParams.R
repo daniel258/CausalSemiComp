@@ -203,6 +203,8 @@ if (!is.null(tau))
   T2.1.tau <- pmin(T2.1, tau)
   ad <- (T1.0.tau < T2.0.tau) & (T1.1.tau < T2.1.tau)
   nd <- (T1.0.tau >= T2.0.tau) & (T1.1.tau >= T2.1.tau)
+  prop.ad.tau <- mean(ad)
+  prop.nd.tau <- mean(nd)
   ########################################################
   mean.T2.ad.a1 <- mean(T2.1.tau[ad])
   mean.T2.ad.a0 <- mean(T2.0.tau[ad])
@@ -222,6 +224,8 @@ if (!is.null(tau))
   med.ATE.T2.ad <- median(T2.1.tau[ad]) - median(T2.0.tau[ad])
   med.ATE.T2.nd <- median(T2.1.tau[nd]) - median(T2.0.tau[nd])
   med.ATE.T1.ad <- median(T1.1.tau[ad]) - median(T1.0.tau[ad])
+  list.ret$prop.ad.tau <- prop.ad.tau
+  list.ret$prop.nd.tau <- prop.nd.tau
   list.ret$mean.T2.ad.a1 <- mean.T2.ad.a1
   list.ret$mean.T2.ad.a0 <- mean.T2.ad.a0
   list.ret$mean.T1.ad.a1 <- mean.T1.ad.a1
