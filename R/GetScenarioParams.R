@@ -32,30 +32,6 @@ GetScenarioParams <- function(scenario.num)
   }
   if (floor(scenario.num/10000)==2)
   {
-    base.weib.scale.a0.01 <- 20
-    base.weib.scale.a1.01 <- 20
-    base.weib.scale.a0.02 <- 15
-    base.weib.scale.a1.02 <- 15
-    base.weib.scale.a0.12 <- 25
-    base.weib.scale.a1.12 <- 25
-    base.weib.shape.a0.01 <- 3
-    base.weib.shape.a1.01 <- 3
-    base.weib.shape.a0.02 <- 1.5
-    base.weib.shape.a1.02 <- 1.5
-    base.weib.shape.a0.12 <- 2.75
-    base.weib.shape.a1.12 <- 2.75
-    beta.a0.01 <- log(c(1, 1))
-    beta.a0.02 <- log(c(1, 1))
-    beta.a0.12 <- log(c(1, 1))
-    beta.a1.01 <- log(c(1, 1))
-    beta.a1.02 <- log(c(1, 1))
-    beta.a1.12 <- log(c(1, 1))
-    tau <- (scenario.num %% 10) * 0.25
-    theta <- 2*tau/(1 - tau)
-    rho <- round(scenario.num/10)/100 - 20
-  }
-  if (floor(scenario.num/10000)==3)
-  {
     base.weib.scale.a0.01 <- 7.5
     base.weib.scale.a1.01 <- 7.5
     base.weib.scale.a0.02 <- 15
@@ -68,6 +44,30 @@ GetScenarioParams <- function(scenario.num)
     base.weib.shape.a1.02 <- 1.75
     base.weib.shape.a0.12 <- 2.5
     base.weib.shape.a1.12 <- 2.5
+    beta.a0.01 <- log(c(1, 1))
+    beta.a0.02 <- log(c(1, 1))
+    beta.a0.12 <- log(c(1, 1))
+    beta.a1.01 <- log(c(1, 1))
+    beta.a1.02 <- log(c(1, 1))
+    beta.a1.12 <- log(c(1, 1))
+    tau <- (scenario.num %% 10) * 0.25
+    theta <- 2*tau/(1 - tau)
+    rho <- round(scenario.num/10)/100 - 20
+  }
+  if (floor(scenario.num/10000)==3)
+  {
+    base.weib.scale.a0.01 <- 20
+    base.weib.scale.a1.01 <- 20
+    base.weib.scale.a0.02 <- 15
+    base.weib.scale.a1.02 <- 15
+    base.weib.scale.a0.12 <- 25
+    base.weib.scale.a1.12 <- 25
+    base.weib.shape.a0.01 <- 3
+    base.weib.shape.a1.01 <- 3
+    base.weib.shape.a0.02 <- 1.5
+    base.weib.shape.a1.02 <- 1.5
+    base.weib.shape.a0.12 <- 2.75
+    base.weib.shape.a1.12 <- 2.75
     beta.a0.01 <- log(c(1, 1))
     beta.a0.02 <- log(c(1, 1))
     beta.a0.12 <- log(c(1, 1))
