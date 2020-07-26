@@ -244,10 +244,10 @@ if (!is.null(tau))
   list.ret$med.ATE.T2.ad <- med.ATE.T2.ad
   list.ret$med.ATE.T2.nd <- med.ATE.T2.nd
   list.ret$med.ATE.T1.ad <- med.ATE.T1.ad
-  # list.ret$T1.0 = T1.0; list.ret$T2.0 = T2.0
-  # list.ret$T1.1 = T1.1; list.ret$T2.1 = T2.1
-  # list.ret$T1.0.tau = T1.0.tau; list.ret$T2.0.tau = T2.0.tau
-  # list.ret$T1.1.tau = T1.1.tau; list.ret$T2.1.tau = T2.1.tau
+  list.ret$T1.0 = T1.0; list.ret$T2.0 = T2.0
+  list.ret$T1.1 = T1.1; list.ret$T2.1 = T2.1
+  list.ret$T1.0.tau = T1.0.tau; list.ret$T2.0.tau = T2.0.tau
+  list.ret$T1.1.tau = T1.1.tau; list.ret$T2.1.tau = T2.1.tau
 }
 ########################################################
 return(list.ret)
