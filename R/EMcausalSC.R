@@ -128,11 +128,6 @@ EMcausalSC <- function(data, Xnames, max.iter = 10000, w = NULL, eps.conv = 0.00
   while(cond==0 & iter < max.iter)
   {
     iter <- iter + 1
-      if (iter ==880)
-      {
-        abb <- 3
-        abbc <- 77
-      }
   #  Daniel::CatIndex(iter)
     ##### E-step
     #####  Per-person posterior distriubtion parametrs
