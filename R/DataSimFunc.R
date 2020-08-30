@@ -8,7 +8,7 @@
 # my trick is to simulate more than needed, throw out "dp" and then keep
 # only desired sample size
 SimDataWeibFrail <- function(n.sample, params, no.protected = T, no.large = T, cens.exp.rate = 0.1,
-                             round.times = T, cens.admin = 200, X = NULL)
+                             round.times = T, cens.admin = 100, X = NULL)
 {
   if (!is.null(X) & (no.large | no.protected)) stop("Can't specify X and ask no large or no protected")
   list2env(params, envir = environment())
@@ -138,10 +138,8 @@ SimDataWeibFrail <- function(n.sample, params, no.protected = T, no.large = T, c
                          gamma.out = gamma.out)
 }
 
-
-
-SimDataWeibFrailNoRound <- function(n.sample, params, no.protected = T, no.large = T, cens.exp.rate = 0.1,
-                             cens.admin = 200, X = NULL)
+SimDataWeibFrailL <- function(n.sample, params, no.protected = T, no.large = T, cens.exp.rate = 0.1,
+                             round.times = T, cens.admin = 100, X = NULL, Lmax = NULL)
 {
   if (!is.null(X) & (no.large | no.protected)) stop("Can't specify X and ask no large or no protected")
   list2env(params, envir = environment())
@@ -181,13 +179,19 @@ SimDataWeibFrailNoRound <- function(n.sample, params, no.protected = T, no.large
     expb102.gamma <- gamma1 * exp(X %*% beta.a1.02)
     expb112.gamma <- gamma1 * exp(X %*% beta.a1.12)
     T1.0 <- (-log(U1.0)/(expb001.gamma * base.weib.scale.a0.01^(-base.weib.shape.a0.01)))^
-                    (1/base.weib.shape.a0.01)
+      (1/base.weib.shape.a0.01)
     T1.1 <- (-log(U1.1)/(expb101.gamma * base.weib.scale.a1.01^(-base.weib.shape.a1.01)))^
-                    (1/base.weib.shape.a1.01)
+      (1/base.weib.shape.a1.01)
     T2.0 <- (-log(U2.0)/(expb002.gamma * base.weib.scale.a0.02^(-base.weib.shape.a0.02)))^
-                    (1/base.weib.shape.a0.02)
+      (1/base.weib.shape.a0.02)
     T2.1 <- (-log(U2.1)/(expb102.gamma * base.weib.scale.a1.02^(-base.weib.shape.a1.02)))^
-                    (1/base.weib.shape.a1.02)
+      (1/base.weib.shape.a1.02)
+    if (round.times==T) {
+      T1.0 <- round(T1.0, 1)
+      T1.1 <- round(T1.1, 1)
+      T2.0 <- round(T2.0, 1)
+      T2.1 <- round(T2.1, 1)
+    }
     #### Re-simulate death times for those who were diseased
     for (i in 1:n.sample.temp)
     {
@@ -195,15 +199,21 @@ SimDataWeibFrailNoRound <- function(n.sample, params, no.protected = T, no.large
       {
         U12.0i <- U12.0[i]
         T2.0[i] <- (-log(U12.0i)/(expb012.gamma[i] * base.weib.scale.a0.12^(-base.weib.shape.a0.12)) +
-                            T1.0[i]^base.weib.shape.a0.12)^(1/base.weib.shape.a0.12)
-        #if(T2.0[i]==T1.0[i]) {T2.0[i] <- round(T1.0[i] + runif(1, 0.1, 1), 1)}
+                      T1.0[i]^base.weib.shape.a0.12)^(1/base.weib.shape.a0.12)
+        if (round.times==T) {
+          T2.0[i] <- round(T2.0[i], 1)
+          if(T2.0[i]==T1.0[i]) {T2.0[i] <- round(T1.0[i] + runif(1, 0.1, 1), 1)}
+        }
       }
       if (T2.1[i] >= T1.1[i])
       {
         U12.1i <- U12.1[i]
         T2.1[i] <- (-log(U12.1i)/(expb112.gamma[i] * base.weib.scale.a1.12^(-base.weib.shape.a1.12)) +
-                            T1.1[i]^base.weib.shape.a1.12)^(1/base.weib.shape.a1.12)
-        #if(T2.1[i]==T1.1[i]) {T2.1[i] <-  round(T1.1[i] + runif(1,0.1,1), 1)}
+                      T1.1[i]^base.weib.shape.a1.12)^(1/base.weib.shape.a1.12)
+        if (round.times==T) {
+          T2.1[i] <- round(T2.1[i], 1)
+          if(T2.1[i]==T1.1[i]) {T2.1[i] <- round(T1.1[i] + runif(1, 0.1, 1), 1)}
+        }
       }}
     out.protected <- (T1.0 < T2.0) & (T1.1 > T2.1)
     out.large <- T2.0 > 50 | T2.1 > 50
@@ -227,17 +237,26 @@ SimDataWeibFrailNoRound <- function(n.sample, params, no.protected = T, no.large
   T2.0 <- T2.0[1:n.sample]
   T2.1 <- T2.1[1:n.sample]
   # Fix zeros
-  #T2.0[T1.0==0] <- pmax(T2.0[T1.0==0], 0.1)
-  #T2.1[T1.1==0] <- pmax(T2.1[T1.1==0], 0.1)
-  #T1.0[T1.0==0] <- 0.1
-  #T1.1[T1.1==0] <- 0.1
-  #T2.0[T2.0==0] <- 0.1
-  #T2.1[T2.1==0] <- 0.1
+  if (round.times==T) {
+    T2.0[T1.0==0] <- pmax(T2.0[T1.0==0], 0.1)
+    T2.1[T1.1==0] <- pmax(T2.1[T1.1==0], 0.1)
+    T1.0[T1.0==0] <- 0.1
+    T1.1[T1.1==0] <- 0.1
+    T2.0[T2.0==0] <- 0.1
+    T2.1[T2.1==0] <- 0.1
+  }
   X <- X[1:n.sample, ]
   gamma.out <- gamma.out[1:n.sample, ]
-  C <- round(rexp(n.sample, rate = cens.exp.rate), 1)
-  C[C==T1.0 | C==T2.0 | C==T1.1 | C==T2.1] <- C[C==T1.0 | C==T2.0 | C==T1.1 | C==T2.1] + 0.05
-  # Simulate A and obtain observed data
+  C <- rexp(n.sample, rate = cens.exp.rate)
+  if (round.times==T) {
+    C <- round(C, 1)
+    C[C==T1.0 | C==T2.0 | C==T1.1 | C==T2.1] <- C[C==T1.0 | C==T2.0 | C==T1.1 | C==T2.1] + 0.05
+  }
+  # Simulate L, A and obtain observed data
+  if (!is.na(Lmax))
+  {
+    L <- runif(n.sample, 0, Lmax)
+  }
   A <- rbinom(n = n.sample, size = 1, prob = 0.5)
   T1 <- T2 <- delta1 <- delta2 <- vector(length = n.sample)
   T1[A==0] <- pmin(T1.0[A==0], T2.0[A==0], C[A==0], cens.admin)
@@ -249,7 +268,15 @@ SimDataWeibFrailNoRound <- function(n.sample, params, no.protected = T, no.large
   delta2[A==0] <-  T2[A==0]==T2.0[A==0]
   delta2[A==1] <-  T2[A==1]==T2.1[A==1]
   T2[delta1==1 & T1==cens.admin] <- cens.admin + 0.05 #avoiding erros in the third move
-  list.to.return <- list(T1.0 = T1.0, T1.1 = T1.1, T2.0 = T2.0, T2.1 = T2.1, X = X,
+  truncated <- T1 < L
+  L <- L[!truncated]
+  A <- A[!truncated]
+  X <- X[!truncated]
+  T1 <- T1[!truncated]
+  T2 <- T2[!truncated]
+  delta1 <- delta1[!truncated]
+  delta2 <- delta2[!truncated]
+  list.to.return <- list(T1.0 = T1.0, T1.1 = T1.1, T2.0 = T2.0, T2.1 = T2.1, X = X, L = L,
                          T1 = T1, T2 = T2, A = A, C = C, delta1 = delta1, delta2 = delta2,
                          gamma.out = gamma.out)
 }
