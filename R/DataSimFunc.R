@@ -268,14 +268,14 @@ SimDataWeibFrailL <- function(n.sample, params, no.protected = T, no.large = T, 
   delta2[A==0] <-  T2[A==0]==T2.0[A==0]
   delta2[A==1] <-  T2[A==1]==T2.1[A==1]
   T2[delta1==1 & T1==cens.admin] <- cens.admin + 0.05 #avoiding erros in the third move
-  truncated <- T1 < L
-  L <- L[!truncated]
-  A <- A[!truncated]
-  X <- X[!truncated]
-  T1 <- T1[!truncated]
-  T2 <- T2[!truncated]
-  delta1 <- delta1[!truncated]
-  delta2 <- delta2[!truncated]
+  not.truncated <- (L < T1) & (L < C)
+  L <- L[not.truncated]
+  A <- A[not.truncated]
+  X <- X[not.truncated, ]
+  T1 <- T1[not.truncated]
+  T2 <- T2[not.truncated]
+  delta1 <- delta1[not.truncated]
+  delta2 <- delta2[not.truncated]
   list.to.return <- list(T1.0 = T1.0, T1.1 = T1.1, T2.0 = T2.0, T2.1 = T2.1, X = X, L = L,
                          T1 = T1, T2 = T2, A = A, C = C, delta1 = delta1, delta2 = delta2,
                          gamma.out = gamma.out)
