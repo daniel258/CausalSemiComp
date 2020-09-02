@@ -5,7 +5,7 @@
 #Data-generating functions for simulations
 ###########################################################################
 CalcTrueCausalParams <- function(n.sample, params, all.times = NULL, no.large, no.protected, adjusted = F,
-                                 tau = NULL, X = NULL, RMST.only = F)
+                                 tau = NULL, X = NULL, RMST.only = F, round.times = T)
 {
 if(is.null(tau) & RMST.only==T) {stop("Only RMST is requested, but no tau is supplied")}
 if(n.sample < 10001) {warning(paste0("Hard to believe that n.sample = ", n.sample, "is sufficient to
@@ -13,10 +13,12 @@ if(n.sample < 10001) {warning(paste0("Hard to believe that n.sample = ", n.sampl
 if (is.null(X))
   {
   sim.df <- SimDataWeibFrail(n.sample = n.sample, params, no.large = no.large,
-                           no.protected = no.protected, cens.exp.rate = 0.000001)
+                           no.protected = no.protected, round.times = round.times,
+                           cens.exp.rate = 0.000001)
 } else {
   sim.df <- SimDataWeibFrail(n.sample = n.sample, params, no.large = no.large, X = X,
-                             no.protected = no.protected, cens.exp.rate = 0.000001)
+                             no.protected = no.protected, round.times = round.times,
+                             cens.exp.rate = 0.000001)
   }
 T1.0 <- sim.df$T1.0
 T1.1 <- sim.df$T1.1
