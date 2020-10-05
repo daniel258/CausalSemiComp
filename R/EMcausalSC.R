@@ -281,18 +281,18 @@ EMcausalSC <- function(data, Xnames, Lname = NULL,
                                 E.gamma = E.gamma[A==0],
                                 E.log.gamma = E.log.gamma[A==0],
                                 maximum = T)$maximum
-      new.thetas[2] <- optimize(f = Eloglik, interval = c(0.01, 30),
+      new.thetas[2] <- optimize(f = Eloglik, interval = c(0.0001, 15),
                                 delta1 = delta1A1, delta2 = delta2A1,
                                 E.gamma = E.gamma[A==1],
                                 E.log.gamma = E.log.gamma[A==1],
                                 maximum = T)$maximum
     } else {
-        new.thetas[1] <- optimize(f = Eloglik, interval = c(0.01, 30),
+        new.thetas[1] <- optimize(f = Eloglik, interval = c(0.0001, 15),
                               delta1 = delta1A0, delta2 = delta2A0,
                               E.gamma = E.gamma[A==0],
                               E.log.gamma = E.log.gamma[A==0], w = w[A==0],
                               maximum = T)$maximum
-        new.thetas[2] <- optimize(f = Eloglik, interval = c(0.01, 30),
+        new.thetas[2] <- optimize(f = Eloglik, interval = c(0.0001, 15),
                               delta1 = delta1A1, delta2 = delta2A1,
                               E.gamma = E.gamma[A==1],
                               E.log.gamma = E.log.gamma[A==1], w = w[A==1],
