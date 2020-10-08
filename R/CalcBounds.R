@@ -87,5 +87,4 @@ CalcBounds <- function(Res, Z = NULL)
 
     ret.list <- list(ad.T2.L = ad.T2.L, ad.T2.U = ad.T2.U, nd.T2.L = nd.T2.L, nd.T2.U = nd.T2.U,
                    ad.T1.L = ad.T1.L, ad.T1.U = ad.T1.U, adjusted = adjusted)
-    ## bound for ad CDF
 }
