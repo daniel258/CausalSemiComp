@@ -1,12 +1,13 @@
 Package: CausalSemiComp
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.043
+Title: Tools for causal inference from semi-competing risks data
+Version: 0.1.044
 Author: Daniel Nevo
 Maintainer: Daniel Nevo <danielnevo@gmail.com>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Description: Estimation and inference for non-parmeteric bounds for causal
+    effect based develope by Nevo & Gorfine (2020+). 
+    EM algorithm for semi-parameteric estimation of these bounds.
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.0
