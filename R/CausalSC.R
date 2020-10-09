@@ -1,6 +1,6 @@
 ########################################################################
 ## Function for CausalSemiComp
-### Estimation of various componenets for bounds and senstivity analysis
+### Estimation of various components for bounds and sensitivity analysis
 
 ### The function returns the following:
 #  S_{2|A=a}(t), for a=0,1  (names: S2A0 and S2A1)
