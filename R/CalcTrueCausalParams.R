@@ -1,9 +1,5 @@
-###########################################################################
-# CasualSemiComp
-
-# A function to calculate true parameter values
-#Data-generating functions for simulations
-###########################################################################
+#' @importFrom stats ecdf
+#' @export
 CalcTrueCausalParams <- function(n.sample, params, all.times = NULL, no.large, no.protected, adjusted = F,
                                  tau = NULL, X = NULL, RMST.only = F, round.times = T)
 {

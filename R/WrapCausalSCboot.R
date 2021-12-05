@@ -1,3 +1,4 @@
+#' @export
 WrapCausalSCboot <- function(data, i = i, all.times, Ltime, out.times,
                              type = c("basic", "bounds"))
 {

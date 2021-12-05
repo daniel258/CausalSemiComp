@@ -1,10 +1,11 @@
+#' @export
 WrapEMCausalSCBoot <- function(data, i = i, tau = NULL, rhos = NULL, H.times = NULL, Xnames, Lname = NULL,
                                population, max.iter, init.thetas, one.theta = F,
                                n.gamma.vals, n.sample.pers)
 {
-  library(dplyr)
-  library(survival)
-  library(CausalSemiComp)
+  # library(dplyr)
+  # library(survival)
+  # library(CausalSemiComp)
   length.out <- 2 + length(Xnames)*6*2 # thetas + betas (naive and standard)
   if (!is.null(H.times)) {length.out <- length.out + 6*length(H.times)}#+H(H.times)
   if (!is.null(rhos)) {

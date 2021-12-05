@@ -4,7 +4,7 @@
 # Scenarios 1xxxy-3xxxy for the nonparametric bounds.
 # Scenarios 1xxxy for adjusted bounds and beta values
 # Scenario 2xxxy and 3xxxy for null effect, but different strata proportions
-
+#' @export
 GetScenarioParams <- function(scenario.num)
 {
   if (floor(scenario.num/10000)==1)
@@ -157,6 +157,30 @@ GetScenarioParams <- function(scenario.num)
     k.tau <- ifelse((scenario.num %% 10)==1, 1/4, ifelse((scenario.num %% 10)==2, 1/3, 1/2))
     theta <- 2*k.tau/(1 - k.tau)
     rho <- round(scenario.num/10)/100 - 60
+  }
+  if (floor(scenario.num/10000)==7)
+  {
+    base.weib.scale.a0.01 <- 4
+    base.weib.scale.a1.01 <- 2
+    base.weib.scale.a0.02 <- 5
+    base.weib.scale.a1.02 <- 3
+    base.weib.scale.a0.12 <- 15
+    base.weib.scale.a1.12 <- 10
+    base.weib.shape.a0.01 <- 2.5
+    base.weib.shape.a1.01 <- 2.5
+    base.weib.shape.a0.02 <- 2
+    base.weib.shape.a1.02 <- 2
+    base.weib.shape.a0.12 <- 2.5
+    base.weib.shape.a1.12 <- 2.5
+    beta.a0.01 <- log(c(1, 1))
+    beta.a0.02 <- log(c(1, 1))
+    beta.a0.12 <- log(c(1, 1))
+    beta.a1.01 <- log(c(1, 1))
+    beta.a1.02 <- log(c(1, 1))
+    beta.a1.12 <- log(c(1, 1))
+    k.tau <- ifelse((scenario.num %% 10)==1, 1/4, ifelse((scenario.num %% 10)==2, 1/3, 1/2))
+    theta <- 2*k.tau/(1 - k.tau)
+    rho <- round(scenario.num/10)/100 - 70
   }
   params <- mget(ls(environment()))
   return(params)

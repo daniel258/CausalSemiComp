@@ -1,17 +1,15 @@
 Package: CausalSemiComp
 Type: Package
 Title: Tools for causal inference from semi-competing risks data
-Version: 0.1.044
+Version: 1.0.0000
 Author: Daniel Nevo
 Maintainer: Daniel Nevo <danielnevo@gmail.com>
-Description: Estimation and inference for non-parmeteric bounds for causal
-    effect based develope by Nevo & Gorfine (2020+). 
-    EM algorithm for semi-parameteric estimation of these bounds.
+Imports: dplyr, survival, boot, magrittr, stats
+Description: Estimation and inference for non-parmeteric bounds and semi-parametric estimation of causal
+    effects in semi-competing risks setup (Nevo & Gorfine, Biostatistics, 2021+). 
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.0
-LinkingTo: 
-    Rcpp
-Imports: 
-    Rcpp
+RoxygenNote: 7.1.2
+Depends: prodlim
+

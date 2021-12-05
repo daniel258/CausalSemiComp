@@ -1,19 +1,21 @@
-########################################################################
-## Function for CausalSemiComp
-### Estimation of various components for bounds and sensitivity analysis
-
-### The function returns the following:
-#  S_{2|A=a}(t), for a=0,1  (names: S2A0 and S2A1)
+#' @title Estimation of components of the bounds for population stratification effects and stratum proportion
+#' @description The function implements the proposed methodology in Nevo and Gorfine (2021+, Biostatistics)
+#' @param T1 A vector of observed (possibly-censored) non-terminal event times
+#' @param T2 A vector observed (possibly-censored) terminal event times
+#' @param delta1 A vecotr indicating for each observation whether the non-terminal event was observed.
+#' @param delta2 A vecotr indicating for each observation whether the non-terminal event was observed.
+#' @param A A vector of binary treatment values for each observation
+#' @param L A vector of possible study entry times. Default is 0.
+#' @param all.times times at which the different componenets should be estimated.
+#' @return S_{2|A=a}(t), for a=0,1  (names: S2A0 and S2A1)
 #  \eta_{A=a}, for a=0,1  (names: etaA0 and etaA1)
 #  \eta_{A=a, T_2 \le t} for a=0,1 (names: etasA0T2.le.t and etasA1T2.le.t)
 #  S_{1|A=a}(t) for a=0,1 (names: S1A0.all.times and S1A1.all.times)
 #  all.times
-########################################################################
-
+#' @author Daniel Nevo
+#' @export
 CausalSC <- function(L = 0, T1, T2, delta1, delta2, A, all.times)
 {
-  #if (!bounds & !sens) stop("Must specfiy either bounds=T or sens=T (or both)")
-  #if (sens==T & is.null(thetas)) stop("Must specfiy thetas when sens==T")
   n.sample <- length(T1)
   n.times <- length(all.times)
   if  (!(length(L) %in% c(1, n.sample))) {
@@ -72,8 +74,6 @@ CausalSC <- function(L = 0, T1, T2, delta1, delta2, A, all.times)
   S2A1.tau <- S2A1$surv[length(S2A1$surv)]
   etaA0 <- -sum((1 - diag.beran.mat.A0.T1) * dS2A0)
   etaA1 <- -sum((1 - diag.beran.mat.A1.T1) * dS2A1)
-  #etaA0 <- -sum((1 - diag.beran.mat.A0.T1) * dS2A0)/(1 - S2A0.tau)
-  #etaA1 <- -sum((1 - diag.beran.mat.A1.T1) * dS2A1)/(1 - S2A1.tau)
   ## Define a function that returns S_{1|A=a,T_2=s}(t)
    S1AtT2s <- function(my.t, my.s, A) {
      if (my.s < my.t)
@@ -108,8 +108,8 @@ CausalSC <- function(L = 0, T1, T2, delta1, delta2, A, all.times)
    }
    #### Calculate S_{1|A=a}(t) ####
    S1A0.all.times <- S1A1.all.times <- vector(length = n.times)
-   S1sA0t <- matrix(nr = n.times, nc = n.times.A0)
-   S1sA1t <- matrix(nr = n.times, nc = n.times.A1)
+   S1sA0t <- matrix(nrow = n.times, ncol = n.times.A0)
+   S1sA1t <- matrix(nrow = n.times, ncol = n.times.A1)
    for (j in 1:n.times)
     {
     t.now <- all.times[j]
@@ -121,14 +121,12 @@ CausalSC <- function(L = 0, T1, T2, delta1, delta2, A, all.times)
      } else {
        S1sA0t[j, ] <-  sapply(dS2A0.times, S1AtT2s, my.t = t.now, A = 0)
        S1A0.all.times[j] <- -sum(S1sA0t[j, ] * dS2A0)
-       #S1A0.all.times[j] <- -sum(S1sA0t[j, ] * dS2A0) / (1 - S2A0.tau)
      }
      if (A1.t.now==0) {
        S1A1.all.times[j] <- 1
      } else {
        S1sA1t[j, ] <-  sapply(dS2A1.times, S1AtT2s, my.t = t.now, A = 1)
        S1A1.all.times[j] <- -sum(S1sA1t[j, ] * dS2A1)
-     #  S1A1.all.times[j] <- -sum(S1sA1t[j, ] * dS2A1) / (1 - S2A1.tau)
      }}
     #### eta_{A=a,T_2\le t} and S_{1|A=a,T1 \le T_2} ####
     etasA0T2.le.t <- etasA1T2.le.t <- vector(length = n.times)
@@ -139,7 +137,6 @@ CausalSC <- function(L = 0, T1, T2, delta1, delta2, A, all.times)
       t.now <- all.times[j]
       A0.t.now <- findInterval(t.now, dS2A0.times)
       A1.t.now <- findInterval(t.now, dS2A1.times)
-    #A0.t.now <- findInterval(t.now, dS2A0.times)
     if (A0.t.now==0) {
       S2A0.now <- 1
       } else if (A0.t.now==n.times.A0) {
@@ -147,7 +144,6 @@ CausalSC <- function(L = 0, T1, T2, delta1, delta2, A, all.times)
         } else {
       S2A0.now <- S2A0.surv[A0.t.now]
         }
-    #A1.t.now <- findInterval(t.now, dS2A1.times)
     if (A1.t.now==0) {
       S2A1.now <- 1
     } else if (A1.t.now==n.times.A1) {

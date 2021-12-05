@@ -1,20 +1,19 @@
-###########################################################################
-# CasualSemiComp
-
-# Data-generating functions for simulations
-###########################################################################
-# Function that simulate data under frailty Weibull illness-death  model
-# with the option to have no disease-protected
-# my trick is to simulate more than needed, throw out "dp" and then keep
-# only desired sample size
+#' @title Functions simulating data under frailty Weibull illness-death model
+#  with the option to have no disease-protected
+#' @description Acceptance-rejection sampling is used in case the order preservation assumption is imposed.
+#' @n.sample Desired sample size
+#' @params A list of Weibull illness-death model; see \code{Weibull illness-death model}
+#' @author Daniel Nevo
+#' @importFrom stats rgamma rbinom runif rexp rnorm
+#' @export
 SimDataWeibFrail <- function(n.sample, params, no.protected = T, no.large = T, cens.exp.rate = 0.1,
                              round.times = T, cens.admin = 100, X = NULL)
 {
   if (!is.null(X) & (no.large | no.protected)) stop("Can't specify X and ask no large or no protected")
   list2env(params, envir = environment())
-  gamma.scale <- theta
-  gamma.common.shape <- rho/theta
-  gamma.each.shape <-  (1 - rho)/theta
+  gamma.scale <- params$theta
+  gamma.common.shape <- params$rho/params$theta
+  gamma.each.shape <-  (1 - params$rho)/params$theta
   n.sample.temp <- n.sample
   cond.sample <- F
   while (cond.sample==F) {
@@ -41,20 +40,20 @@ SimDataWeibFrail <- function(n.sample, params, no.protected = T, no.large = T, c
     U2.1 <- runif(n.sample.temp)
     U12.0 <- runif(n.sample.temp)
     U12.1 <- runif(n.sample.temp)
-    expb001.gamma <- gamma0 * exp(X %*% beta.a0.01)
-    expb002.gamma <- gamma0 * exp(X %*% beta.a0.02)
-    expb012.gamma <- gamma0 * exp(X %*% beta.a0.12)
-    expb101.gamma <- gamma1 * exp(X %*% beta.a1.01)
-    expb102.gamma <- gamma1 * exp(X %*% beta.a1.02)
-    expb112.gamma <- gamma1 * exp(X %*% beta.a1.12)
-    T1.0 <- (-log(U1.0)/(expb001.gamma * base.weib.scale.a0.01^(-base.weib.shape.a0.01)))^
-                              (1/base.weib.shape.a0.01)
-    T1.1 <- (-log(U1.1)/(expb101.gamma * base.weib.scale.a1.01^(-base.weib.shape.a1.01)))^
-                      (1/base.weib.shape.a1.01)
-    T2.0 <- (-log(U2.0)/(expb002.gamma * base.weib.scale.a0.02^(-base.weib.shape.a0.02)))^
-                      (1/base.weib.shape.a0.02)
-    T2.1 <- (-log(U2.1)/(expb102.gamma * base.weib.scale.a1.02^(-base.weib.shape.a1.02)))^
-                      (1/base.weib.shape.a1.02)
+    expb001.gamma <- gamma0 * exp(X %*% params$beta.a0.01)
+    expb002.gamma <- gamma0 * exp(X %*% params$beta.a0.02)
+    expb012.gamma <- gamma0 * exp(X %*% params$beta.a0.12)
+    expb101.gamma <- gamma1 * exp(X %*% params$beta.a1.01)
+    expb102.gamma <- gamma1 * exp(X %*% params$beta.a1.02)
+    expb112.gamma <- gamma1 * exp(X %*% params$beta.a1.12)
+    T1.0 <- (-log(U1.0)/(expb001.gamma * params$base.weib.scale.a0.01^(-params$base.weib.shape.a0.01)))^
+                              (1/params$base.weib.shape.a0.01)
+    T1.1 <- (-log(U1.1)/(expb101.gamma * params$base.weib.scale.a1.01^(-params$base.weib.shape.a1.01)))^
+                      (1/params$base.weib.shape.a1.01)
+    T2.0 <- (-log(U2.0)/(expb002.gamma * params$base.weib.scale.a0.02^(-params$base.weib.shape.a0.02)))^
+                      (1/params$base.weib.shape.a0.02)
+    T2.1 <- (-log(U2.1)/(expb102.gamma * params$base.weib.scale.a1.02^(-params$base.weib.shape.a1.02)))^
+                      (1/params$base.weib.shape.a1.02)
     if (round.times==T) {
       T1.0 <- round(T1.0, 1)
       T1.1 <- round(T1.1, 1)
@@ -67,8 +66,8 @@ SimDataWeibFrail <- function(n.sample, params, no.protected = T, no.large = T, c
       if (T2.0[i] >= T1.0[i])
       {
         U12.0i <- U12.0[i]
-        T2.0[i] <- (-log(U12.0i)/(expb012.gamma[i] * base.weib.scale.a0.12^(-base.weib.shape.a0.12)) +
-                     T1.0[i]^base.weib.shape.a0.12)^(1/base.weib.shape.a0.12)
+        T2.0[i] <- (-log(U12.0i)/(expb012.gamma[i] * params$base.weib.scale.a0.12^(-params$base.weib.shape.a0.12)) +
+                     T1.0[i]^params$base.weib.shape.a0.12)^(1/params$base.weib.shape.a0.12)
         if (round.times==T) {
           T2.0[i] <- round(T2.0[i], 1)
         if(T2.0[i]==T1.0[i]) {T2.0[i] <- round(T1.0[i] + runif(1, 0.1, 1), 1)}
@@ -77,8 +76,8 @@ SimDataWeibFrail <- function(n.sample, params, no.protected = T, no.large = T, c
       if (T2.1[i] >= T1.1[i])
       {
         U12.1i <- U12.1[i]
-        T2.1[i] <- (-log(U12.1i)/(expb112.gamma[i] * base.weib.scale.a1.12^(-base.weib.shape.a1.12)) +
-                             T1.1[i]^base.weib.shape.a1.12)^(1/base.weib.shape.a1.12)
+        T2.1[i] <- (-log(U12.1i)/(expb112.gamma[i] * params$base.weib.scale.a1.12^(-params$base.weib.shape.a1.12)) +
+                             T1.1[i]^params$base.weib.shape.a1.12)^(1/params$base.weib.shape.a1.12)
         if (round.times==T) {
           T2.1[i] <- round(T2.1[i], 1)
           if(T2.1[i]==T1.1[i]) {T2.1[i] <- round(T1.1[i] + runif(1, 0.1, 1), 1)}
@@ -138,14 +137,16 @@ SimDataWeibFrail <- function(n.sample, params, no.protected = T, no.large = T, c
                          gamma.out = gamma.out)
 }
 
+
+# The function below was used for internal checkings and should not be used without careful inspection.
 SimDataWeibFrailL <- function(n.sample, params, no.protected = T, no.large = T, cens.exp.rate = 0.1,
                              round.times = T, cens.admin = 100, X = NULL, Lmax = NULL)
 {
   if (!is.null(X) & (no.large | no.protected)) stop("Can't specify X and ask no large or no protected")
   list2env(params, envir = environment())
-  gamma.scale <- theta
-  gamma.common.shape <- rho/theta
-  gamma.each.shape <-  (1 - rho)/theta
+  gamma.scale <- params$theta
+  gamma.common.shape <- params$rho/params$theta
+  gamma.each.shape <-  (1 - params$rho)/params$theta
   n.sample.temp <- n.sample
   cond.sample <- F
   while (cond.sample==F) {
@@ -172,20 +173,20 @@ SimDataWeibFrailL <- function(n.sample, params, no.protected = T, no.large = T, 
     U2.1 <- runif(n.sample.temp)
     U12.0 <- runif(n.sample.temp)
     U12.1 <- runif(n.sample.temp)
-    expb001.gamma <- gamma0 * exp(X %*% beta.a0.01)
-    expb002.gamma <- gamma0 * exp(X %*% beta.a0.02)
-    expb012.gamma <- gamma0 * exp(X %*% beta.a0.12)
-    expb101.gamma <- gamma1 * exp(X %*% beta.a1.01)
-    expb102.gamma <- gamma1 * exp(X %*% beta.a1.02)
-    expb112.gamma <- gamma1 * exp(X %*% beta.a1.12)
-    T1.0 <- (-log(U1.0)/(expb001.gamma * base.weib.scale.a0.01^(-base.weib.shape.a0.01)))^
-      (1/base.weib.shape.a0.01)
-    T1.1 <- (-log(U1.1)/(expb101.gamma * base.weib.scale.a1.01^(-base.weib.shape.a1.01)))^
-      (1/base.weib.shape.a1.01)
-    T2.0 <- (-log(U2.0)/(expb002.gamma * base.weib.scale.a0.02^(-base.weib.shape.a0.02)))^
-      (1/base.weib.shape.a0.02)
-    T2.1 <- (-log(U2.1)/(expb102.gamma * base.weib.scale.a1.02^(-base.weib.shape.a1.02)))^
-      (1/base.weib.shape.a1.02)
+    expb001.gamma <- gamma0 * exp(X %*% params$beta.a0.01)
+    expb002.gamma <- gamma0 * exp(X %*% params$beta.a0.02)
+    expb012.gamma <- gamma0 * exp(X %*% params$beta.a0.12)
+    expb101.gamma <- gamma1 * exp(X %*% params$beta.a1.01)
+    expb102.gamma <- gamma1 * exp(X %*% params$beta.a1.02)
+    expb112.gamma <- gamma1 * exp(X %*% params$beta.a1.12)
+    T1.0 <- (-log(U1.0)/(expb001.gamma * params$base.weib.scale.a0.01^(-params$base.weib.shape.a0.01)))^
+      (1/params$base.weib.shape.a0.01)
+    T1.1 <- (-log(U1.1)/(expb101.gamma * params$base.weib.scale.a1.01^(-params$base.weib.shape.a1.01)))^
+      (1/params$base.weib.shape.a1.01)
+    T2.0 <- (-log(U2.0)/(expb002.gamma * params$base.weib.scale.a0.02^(-params$base.weib.shape.a0.02)))^
+      (1/params$base.weib.shape.a0.02)
+    T2.1 <- (-log(U2.1)/(expb102.gamma * params$base.weib.scale.a1.02^(-params$base.weib.shape.a1.02)))^
+      (1/params$base.weib.shape.a1.02)
     if (round.times==T) {
       T1.0 <- round(T1.0, 1)
       T1.1 <- round(T1.1, 1)
@@ -198,8 +199,8 @@ SimDataWeibFrailL <- function(n.sample, params, no.protected = T, no.large = T, 
       if (T2.0[i] >= T1.0[i])
       {
         U12.0i <- U12.0[i]
-        T2.0[i] <- (-log(U12.0i)/(expb012.gamma[i] * base.weib.scale.a0.12^(-base.weib.shape.a0.12)) +
-                      T1.0[i]^base.weib.shape.a0.12)^(1/base.weib.shape.a0.12)
+        T2.0[i] <- (-log(U12.0i)/(expb012.gamma[i] * params$base.weib.scale.a0.12^(-params$base.weib.shape.a0.12)) +
+                      T1.0[i]^params$base.weib.shape.a0.12)^(1/params$base.weib.shape.a0.12)
         if (round.times==T) {
           T2.0[i] <- round(T2.0[i], 1)
           if(T2.0[i]==T1.0[i]) {T2.0[i] <- round(T1.0[i] + runif(1, 0.1, 1), 1)}
@@ -208,8 +209,8 @@ SimDataWeibFrailL <- function(n.sample, params, no.protected = T, no.large = T, 
       if (T2.1[i] >= T1.1[i])
       {
         U12.1i <- U12.1[i]
-        T2.1[i] <- (-log(U12.1i)/(expb112.gamma[i] * base.weib.scale.a1.12^(-base.weib.shape.a1.12)) +
-                      T1.1[i]^base.weib.shape.a1.12)^(1/base.weib.shape.a1.12)
+        T2.1[i] <- (-log(U12.1i)/(expb112.gamma[i] * params$base.weib.scale.a1.12^(-params$base.weib.shape.a1.12)) +
+                      T1.1[i]^params$base.weib.shape.a1.12)^(1/params$base.weib.shape.a1.12)
         if (round.times==T) {
           T2.1[i] <- round(T2.1[i], 1)
           if(T2.1[i]==T1.1[i]) {T2.1[i] <- round(T1.1[i] + runif(1, 0.1, 1), 1)}
